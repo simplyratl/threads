@@ -8,7 +8,7 @@ await import("./src/env.mjs");
 const config = {
   reactStrictMode: true,
   images: {
-    domains: ["blogger.googleusercontent.com"],
+    domains: ["blogger.googleusercontent.com", "pbs.twimg.com"],
   },
 
   /**

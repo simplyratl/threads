@@ -4,10 +4,12 @@
 
 :root {
   --invert-color: invert(0);
+  --background: 0, 0%, 90%;
 }
 
 .dark {
   --invert-color: invert(1);
+  --background: 0, 0%, 0%;
 }
 
 .inverted-logo {
