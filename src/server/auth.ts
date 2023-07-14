@@ -46,11 +46,12 @@ export const authOptions: NextAuthOptions = {
     }),
   },
   adapter: PrismaAdapter(prisma),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   providers: [
     InstagramProvider({
       clientId: process.env.INSTAGRAM_CLIENT_ID,
-      clientSecret: process.env.INSTAGRAM_CLIENT_SECRET
-    })
+      clientSecret: process.env.INSTAGRAM_CLIENT_SECRET,
+    }),
     /**
      * ...add more providers here.
      *
