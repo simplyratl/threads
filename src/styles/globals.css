@@ -1,3 +1,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --invert-color: invert(0);
+}
+
+.dark {
+  --invert-color: invert(1);
+}
+
+.inverted-logo {
+  filter: var(--invert-color);
+}
