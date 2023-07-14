@@ -6,7 +6,8 @@ import {
   type DefaultSession,
 } from "next-auth";
 import InstagramProvider from "next-auth/providers/instagram";
-// import { env } from "~/env.mjs";
+import GoogleProvider from "next-auth/providers/google";
+import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
 
 /**
@@ -49,8 +50,12 @@ export const authOptions: NextAuthOptions = {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   providers: [
     InstagramProvider({
-      clientId: process.env.INSTAGRAM_CLIENT_ID,
-      clientSecret: process.env.INSTAGRAM_CLIENT_SECRET,
+      clientId: env.INSTAGRAM_CLIENT_ID,
+      clientSecret: env.INSTAGRAM_CLIENT_SECRET,
+    }),
+    GoogleProvider({
+      clientId: env.GOOGLE_CLIENT_ID ?? "",
+      clientSecret: env.GOOGLE_CLIENT_SECRET ?? "",
     }),
     /**
      * ...add more providers here.
