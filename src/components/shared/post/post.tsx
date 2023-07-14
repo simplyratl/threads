@@ -25,6 +25,7 @@ function Post({ post, image }: PostProps) {
           avatar={post.user.image as string}
           username={post.user.name as string}
           verified={post.user.verified}
+          timestamp={new Date(post.createdAt)}
         />
 
         <div className="relative -top-4 ">
