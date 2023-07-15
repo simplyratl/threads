@@ -3,7 +3,11 @@ import React from "react";
 import PostUser from "../shared/post/post-user";
 import { api } from "~/utils/api";
 
-export default function HomeProfile() {
+interface Props {
+  showCurrentProfile?: boolean;
+}
+
+export default function HomeProfile({ showCurrentProfile = true }: Props) {
   const { data: session } = useSession();
   const user = session?.user;
 
@@ -26,7 +30,7 @@ export default function HomeProfile() {
   return (
     <div className="hidden h-full w-[320px] flex-shrink-0 lg:block">
       <div>
-        {user && (
+        {showCurrentProfile && user && (
           <div className="mb-2">
             <PostUser
               id={user.id}

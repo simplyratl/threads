@@ -52,9 +52,11 @@ const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
               <div>
                 <h2 className="flex items-center gap-1 text-xl font-semibold sm:text-2xl">
                   {user?.name}{" "}
-                  <span>
-                    <MdVerified className="text-blue-500" size={24} />
-                  </span>
+                  {user?.verified && (
+                    <span>
+                      <MdVerified className="text-blue-500" size={24} />
+                    </span>
+                  )}
                 </h2>
                 <h3 className="text-foreground">
                   {user?.name?.replace(" ", ".").toLowerCase()}
