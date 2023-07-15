@@ -30,7 +30,15 @@ export const userRouter = createTRPCRouter({
           name: true,
           image: true,
           verified: true,
-          posts: true,
+          posts: {
+            select: {
+              id: true,
+              content: true,
+              createdAt: true,
+              userId: true,
+              user: true,
+            },
+          },
           followers: true,
           following: true,
         },

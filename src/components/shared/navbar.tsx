@@ -6,11 +6,13 @@ import Image from "next/image";
 import { signIn, signOut, useSession } from "next-auth/react";
 import {
   HiHome,
+  HiMagnifyingGlass,
   HiMiniBell,
   HiMiniPencilSquare,
   HiOutlineArrowLeftOnRectangle,
   HiOutlineBell,
   HiOutlineHome,
+  HiOutlineMagnifyingGlass,
   HiOutlineUser,
   HiPencilSquare,
 } from "react-icons/hi2";
@@ -23,24 +25,30 @@ function Navbar() {
     {
       name: "Home",
       href: "/",
-      icon: <HiOutlineHome className="h-7 w-7" />,
-      activeIcon: <HiHome className="h-7 w-7" />,
+      icon: <HiOutlineHome className="h-8 w-8 md:h-7 md:w-7" />,
+      activeIcon: <HiHome className="h-8 w-8 md:h-7 md:w-7" />,
       private: false,
+    },
+    {
+      name: "Search",
+      href: "/search",
+      icon: <HiOutlineMagnifyingGlass className="h-8 w-8 md:h-7 md:w-7" />,
+      activeIcon: <HiMagnifyingGlass className="h-8 w-8 md:h-7 md:w-7" />,
+      private: false,
+    },
+    {
+      name: "Create a Thread",
+      href: "/threads/new",
+      icon: <HiPencilSquare className="h-8 w-8 md:h-7 md:w-7" />,
+      activeIcon: <HiMiniPencilSquare className="h-8 w-8 md:h-7 md:w-7" />,
+      private: true,
     },
     {
       name: "Notifications",
       href: "/notifications",
-      icon: <HiOutlineBell className="h-7 w-7" />,
-      activeIcon: <HiMiniBell className="h-7 w-7" />,
+      icon: <HiOutlineBell className="h-8 w-8 md:h-7 md:w-7" />,
+      activeIcon: <HiMiniBell className="h-8 w-8 md:h-7 md:w-7" />,
       private: false,
-    },
-
-    {
-      name: "Create a Thread",
-      href: "/threads/new",
-      icon: <HiPencilSquare className="h-7 w-7" />,
-      activeIcon: <HiMiniPencilSquare className="h-7 w-7" />,
-      private: true,
     },
     {
       name: "Profile",
@@ -82,7 +90,7 @@ function Navbar() {
     return (
       <li
         key={link.name}
-        className={`hover:bg-accent rounded-lg ${active ? "bg-accent" : ""}`}
+        className={`rounded-lg hover:bg-accent ${active ? "bg-accent" : ""}`}
       >
         <Link
           href={link.href}
@@ -105,7 +113,7 @@ function Navbar() {
           onClick={() => void signOut()}
         >
           <span>
-            <HiOutlineArrowLeftOnRectangle className="h-7 w-7" />
+            <HiOutlineArrowLeftOnRectangle className="h-8 w-8 md:h-7 md:w-7" />
           </span>
           <span className="hidden lg:block">Logout</span>
           <span className="hidden lg:block">
@@ -120,7 +128,7 @@ function Navbar() {
           onClick={() => void signIn()}
         >
           <span>
-            <HiOutlineUser className="h-7 w-7" />
+            <HiOutlineUser className="h-8 w-8 md:h-7 md:w-7" />
           </span>
           <span className="hidden lg:block">Login</span>
         </button>
@@ -130,9 +138,9 @@ function Navbar() {
 
   return (
     <header className="fixed bottom-0 left-0 z-50 h-20 w-full border-r bg-background px-4 py-6 md:bottom-auto md:top-0 md:h-screen md:w-20 lg:w-[330px]">
-      <nav className="mx-auto flex h-full max-w-5xl flex-row justify-between md:flex-col">
-        <div className="flex items-center gap-4 md:block">
-          <a href="#" className="hidden items-center gap-2 md:flex">
+      <nav className="mx-auto flex h-full w-full max-w-5xl flex-row justify-between md:flex-col">
+        <div className="flex w-full items-center gap-4 md:block md:w-auto">
+          <Link href="/" className="hidden items-center gap-2 md:flex">
             <div className="h-10 w-10">
               <Image
                 src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi7cFYYdnIE7OeUJS72sOI4_CpDu-pywbSMjVN92DYgsSJKAmhHKiHKvgAZ6C7SCFavCwLeAwvQG2PH9CrVEj4b55sKuPUC5fhIUVk0SUS4k3OwGMosNz7Pr_HjE-pYE6gk1NY8L_Prf3r8LoivXBrPVbfj8_VNIuxHes7_Dme-SzKekL0h_X879lYMAI2s/w372-h413-p-k-no-nu/Threads%20Logo.png"
@@ -144,12 +152,12 @@ function Navbar() {
             <span className="hidden text-xl font-semibold lg:block">
               Threads
             </span>
-          </a>
+          </Link>
 
-          <div className="md:mt-8">
-            <ul className="flex justify-between gap-2 md:flex-col md:justify-start">
+          <div className="w-full md:mt-8 md:w-auto">
+            <ul className="flex w-full justify-between gap-2 md:w-auto md:flex-col md:justify-start">
               {links.map((link) => displayLink(link))}
-              <li className={`hover:bg-accent rounded-lg`}>{authButton()}</li>
+              <li className={`rounded-lg hover:bg-accent`}>{authButton()}</li>
             </ul>
           </div>
         </div>

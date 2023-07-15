@@ -4,12 +4,18 @@ import Image from "next/image";
 import ControlBar from "./control-bar";
 import ImagePreview from "../image-preview";
 import PostUser from "./post-user";
-import { Post, User } from "@prisma/client";
+import { Post as PostType, User } from "@prisma/client";
+// import { Post, User } from "@prisma/client";
+
+interface PostWithUser extends PostType {
+  user: User;
+  _count: {
+    likes: number;
+  };
+}
 
 interface PostProps {
-  post: Post & {
-    user: User;
-  };
+  post: PostWithUser;
   image?: string;
 }
 
@@ -18,7 +24,7 @@ function Post({ post, image }: PostProps) {
 
   return (
     <article>
-      <div className="before:bg-accent relative overflow-hidden before:absolute before:left-[18px] before:top-14 before:h-full before:w-0.5">
+      <div className="relative overflow-hidden before:absolute before:left-[18px] before:top-14 before:h-full before:w-0.5 before:bg-accent">
         <PostUser
           id={post.user.id}
           avatar={post.user.image as string}
@@ -48,7 +54,7 @@ function Post({ post, image }: PostProps) {
         </div>
 
         <div className="relative -top-1 ml-[52px]">
-          <ControlBar />
+          <ControlBar postId={post.id} likes={post._count.likes} />
         </div>
       </div>
 
