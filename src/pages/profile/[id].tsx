@@ -1,7 +1,7 @@
 import {
-  GetStaticPathsContext,
-  GetStaticPropsContext,
-  InferGetStaticPropsType,
+  type GetStaticPathsContext,
+  type GetStaticPropsContext,
+  type InferGetStaticPropsType,
   type NextPage,
 } from "next";
 import { api } from "~/utils/api";
@@ -19,9 +19,7 @@ const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   );
 };
 
-export const getStaticProps = async (
-  context: GetStaticPathsContext<{ id: string }>
-) => {
+export const getStaticProps = async (context: any) => {
   const id = context.params?.id;
 
   if (id === null) {
