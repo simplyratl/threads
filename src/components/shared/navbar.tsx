@@ -34,6 +34,7 @@ function Navbar() {
       activeIcon: <HiMiniBell className="h-7 w-7" />,
       private: false,
     },
+
     {
       name: "Create a Thread",
       href: "/threads/new",
@@ -41,7 +42,27 @@ function Navbar() {
       activeIcon: <HiMiniPencilSquare className="h-7 w-7" />,
       private: true,
     },
+    {
+      name: "Profile",
+      href: `/profile/${session?.user.id as string}`,
+      icon: displayProfileImage(),
+      activeIcon: displayProfileImage(),
+      private: true,
+    },
   ];
+
+  function displayProfileImage() {
+    return (
+      <div className="h-6 w-6 overflow-hidden rounded-full">
+        <Image
+          src={session?.user.image as string}
+          alt="Profile Image"
+          fill
+          className="!relative h-full w-full object-cover"
+        />
+      </div>
+    );
+  }
 
   function onChangeTheme(checked: boolean) {
     setTheme(checked ? "dark" : "light");

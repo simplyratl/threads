@@ -8,7 +8,11 @@ await import("./src/env.mjs");
 const config = {
   reactStrictMode: true,
   images: {
-    domains: ["blogger.googleusercontent.com", "pbs.twimg.com"],
+    domains: [
+      "blogger.googleusercontent.com",
+      "pbs.twimg.com",
+      "lh3.googleusercontent.com",
+    ],
   },
 
   /**
@@ -21,6 +25,14 @@ const config = {
     locales: ["en"],
     defaultLocale: "en",
   },
+
+  //UNCOMMENT IF NEEDED
+  // typescript: {
+  //   ignoreBuildErrors: true,
+  // },
+  // eslint: {
+  //   ignoreDuringBuilds: true,
+  // },
 };
 
 export default config;

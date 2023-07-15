@@ -9,11 +9,13 @@ export default function ThreadsNew() {
   const { data: session } = useSession();
 
   const [content, setContent] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const createPost = api.posts.create.useMutation({
     onSuccess: (post) => {
       setContent("");
       toast.success("Post created");
+      setIsSubmitting(false);
     },
   });
 
@@ -22,6 +24,7 @@ export default function ThreadsNew() {
 
     if (!content) return alert("Please enter some content");
 
+    setIsSubmitting(true);
     createPost.mutate({ content });
   };
 
@@ -39,6 +42,7 @@ export default function ThreadsNew() {
           <div className="w-full">
             {session?.user && (
               <PostUser
+                id={session?.user.id}
                 avatar={session.user.image as string}
                 username={session.user.name as string}
                 verified
@@ -49,12 +53,15 @@ export default function ThreadsNew() {
                 className="w-full rounded border bg-transparent px-4 py-3"
                 placeholder="Start a thread..."
                 value={content}
+                disabled={isSubmitting}
                 onChange={(event) => setContent(event.target.value)}
               ></textarea>
             </div>
 
             <div>
-              <button className="text-xl text-blue-400">Post</button>
+              <button disabled={isSubmitting} className="text-xl text-blue-400">
+                Post
+              </button>
             </div>
           </div>
         </form>

@@ -16,20 +16,19 @@ interface PostProps {
 function Post({ post, image }: PostProps) {
   const [imagePreview, setImagePreview] = React.useState<boolean | null>(null);
 
-  console.log(post);
-
   return (
     <article>
       <div className="before:bg-accent relative overflow-hidden before:absolute before:left-[18px] before:top-14 before:h-full before:w-0.5">
         <PostUser
+          id={post.user.id}
           avatar={post.user.image as string}
           username={post.user.name as string}
           verified={post.user.verified}
           timestamp={new Date(post.createdAt)}
         />
 
-        <div className="relative -top-4 ">
-          <div className="ml-[52px]">
+        <div className="relative -top-4 ml-[52px]">
+          <div className="">
             <p>{post.content}</p>
 
             {image && (
@@ -48,7 +47,7 @@ function Post({ post, image }: PostProps) {
           </div>
         </div>
 
-        <div className="relative -top-1 ml-12">
+        <div className="relative -top-1 ml-[52px]">
           <ControlBar />
         </div>
       </div>
