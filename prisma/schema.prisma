@@ -54,6 +54,8 @@ model User {
 
     posts         Post[]
     likes         Like[]
+
+    notificationsSent Notification[] @relation("Sender")
     notifications Notification[]
 
     followers User[] @relation(name:"Followers")
@@ -97,11 +99,14 @@ model Like{
 
 model Notification {
   id         String   @id @default(cuid())
+
+    senderUserId   String
   userId     String
   type       String   
   postId     String?
   createdAt  DateTime @default(now())
 
+    sender         User     @relation("Sender", fields: [senderUserId], references: [id], onDelete: Cascade)
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   post       Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
 }

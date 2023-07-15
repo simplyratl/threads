@@ -61,7 +61,7 @@ function PostUser({
             <div className="ml-2 h-1 w-1 rounded-full bg-neutral-500 dark:bg-neutral-300"></div>
             <div className="group relative ml-2">
               <span
-                className={`relative ml-2 hover:opacity-70`}
+                className={`relative hover:opacity-70`}
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
               >

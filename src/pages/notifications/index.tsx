@@ -8,6 +8,7 @@ import { formatToNowDate } from "~/utils/formatToNowDate";
 
 interface NotificationWithUser extends Notification {
   user: User;
+  sender: User;
 }
 
 export default function Home() {
@@ -56,8 +57,8 @@ export default function Home() {
                   <li className="flex w-full gap-3 pt-2" key={notification.id}>
                     <div className="h-11 w-11 flex-shrink-0 overflow-hidden rounded-full">
                       <Image
-                        src={notification.user.image as string}
-                        alt={notification.user.name as string}
+                        src={notification.sender.image as string}
+                        alt={notification.sender.name as string}
                         fill
                         className="!relative h-full w-full object-cover"
                       />
@@ -65,7 +66,7 @@ export default function Home() {
                     <div className="w-full border-b border-accent pb-3">
                       <div className="flex items-center gap-2">
                         <h4 className="text-base font-semibold">
-                          {notification.user.name}
+                          {notification.sender.name}
                         </h4>
                         <span className="text-sm text-foreground">
                           {formatToNowDate(new Date(notification.createdAt))}

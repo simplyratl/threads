@@ -46,7 +46,7 @@ export default function HomeProfile() {
                     id={recommendedUser.id}
                     avatar={recommendedUser.image as string}
                     username={recommendedUser.name as string}
-                    verified={verified?.verified ?? false}
+                    verified={recommendedUser.verified}
                     small
                   />
                 </li>
