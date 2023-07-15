@@ -98,7 +98,7 @@ export const postRouter = createTRPCRouter({
 
           await ctx.prisma.notification.create({
             data: {
-              userId: post.user.id,
+              userId: ctx.session.user.id,
               type: "like",
               postId: postId,
             },
