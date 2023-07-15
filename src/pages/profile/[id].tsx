@@ -1,9 +1,10 @@
 import { type InferGetStaticPropsType, type NextPage } from "next";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import Image from "next/image";
 import { useState } from "react";
 import { MdVerified } from "react-icons/md";
+import Button from "~/components/shared/button";
 import Posts from "~/components/shared/post/posts";
 import { api } from "~/utils/api";
 import { ssgHelper } from "~/utils/ssg";
@@ -49,7 +50,7 @@ const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
           <div className="flex w-full justify-between">
             <div>
               <div>
-                <h2 className="font-semibol2 flex items-center gap-1 text-2xl">
+                <h2 className="flex items-center gap-1 text-xl font-semibold sm:text-2xl">
                   {user?.name}{" "}
                   <span>
                     <MdVerified className="text-blue-500" size={24} />
@@ -61,11 +62,13 @@ const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
               </div>
 
               <div>
-                <div className="mt-5 flex items-center justify-between">
+                <div className="mt-5 flex items-center gap-4">
                   {loggedUser?.id === user?.id ? (
                     <>
-                      <button>Edit Profile</button>
-                      <button>Share Profile</button>
+                      <Button variant="outline">Edit Profile</Button>
+                      <Button variant="outline" onClick={() => void signOut()}>
+                        <span className="block">Logout</span>
+                      </Button>
                     </>
                   ) : (
                     <button>Follow</button>
@@ -73,7 +76,7 @@ const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                 </div>
               </div>
             </div>
-            <div className="h-28 w-28 overflow-hidden rounded-full">
+            <div className="h-24 w-24 overflow-hidden rounded-full sm:h-28 sm:w-28">
               <Image
                 src={user?.image as string}
                 alt={`${user?.name as string} profile picture`}
@@ -101,7 +104,7 @@ const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
         <div className="mt-10">
           <Posts
             posts={posts}
-            isLoading={isLoading}
+            isLoading={postsData.isLoading}
             fetchNewPosts={postsData.fetchNextPage}
             hasMore={postsData.hasNextPage}
           />

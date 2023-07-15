@@ -15,29 +15,37 @@ export default function HomeProfile() {
     }
   );
 
+  const { data: recommendedUsers } = api.users.getRecommendedUsers.useQuery(
+    { userId: user?.id as string },
+    {
+      refetchOnWindowFocus: false,
+      staleTime: Infinity,
+    }
+  );
+
   return (
     <div className="hidden h-full w-[320px] flex-shrink-0 lg:block">
       <div>
-        <div>
-          {user && (
+        {user && (
+          <div className="mb-2">
             <PostUser
               id={user.id}
               avatar={user.image as string}
               username={user.name as string}
               verified={verified?.verified ?? false}
             />
-          )}
-        </div>
-        <div className="mt-2">
+          </div>
+        )}
+        <div>
           <h4 className="mb-4">Suggested for you</h4>
           <ul className="flex flex-col gap-4">
-            {user &&
-              new Array(5).fill(0).map((_, index) => (
+            {recommendedUsers &&
+              recommendedUsers.map((recommendedUser, index) => (
                 <li key={index}>
                   <PostUser
-                    id={user.id}
-                    avatar={user.image as string}
-                    username={user.name as string}
+                    id={recommendedUser.id}
+                    avatar={recommendedUser.image as string}
+                    username={recommendedUser.name as string}
                     verified={verified?.verified ?? false}
                     small
                   />

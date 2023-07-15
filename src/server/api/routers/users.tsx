@@ -9,6 +9,8 @@ export const userRouter = createTRPCRouter({
   getIfVerified: publicProcedure
     .input(z.object({ username: z.string() }))
     .query(async ({ input: { username }, ctx }) => {
+      if (!username) return { verified: false };
+
       const verified = await ctx.prisma.user.findFirst({
         where: {
           name: username,
@@ -45,5 +47,17 @@ export const userRouter = createTRPCRouter({
       });
 
       return user;
+    }),
+  getRecommendedUsers: publicProcedure
+    .input(z.object({ userId: z.string().optional() }))
+    .query(async ({ input: { userId }, ctx }) => {
+      const whereClause = userId ? { NOT: { id: userId } } : {};
+
+      const recommendedUsers = await ctx.prisma.user.findMany({
+        take: 5,
+        where: whereClause,
+      });
+
+      return recommendedUsers;
     }),
 });

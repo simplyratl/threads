@@ -14,7 +14,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
     <SessionProvider session={session}>
       <Providers>
         <Navbar />
-        <div className="bg-background pt-8">
+        <div className="bg-background pb-20 pt-8 md:pb-0">
           <Component {...pageProps} />
         </div>
       </Providers>

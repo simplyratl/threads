@@ -4,6 +4,8 @@ import { useState } from "react";
 import PostUser from "~/components/shared/post/post-user";
 import { api } from "~/utils/api";
 import toast from "react-hot-toast";
+import Button from "~/components/shared/button";
+import TextareaAutosize from "react-textarea-autosize";
 
 export default function ThreadsNew() {
   const { data: session } = useSession();
@@ -19,21 +21,20 @@ export default function ThreadsNew() {
       setContent("");
       toast.success("Post created");
       setIsSubmitting(false);
-
-      // const updateData = (posts: any) => {
-      //   return [post, ...posts];
-      // };
-
-      // trpcUtils.posts.getAll.setData(undefined, updateData);
-
-      // trpcUtils.invalidateQuery(["posts.getAll"]);
+    },
+    onError: (error) => {
+      toast.error(error.message);
+      setIsSubmitting(false);
     },
   });
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!content) return alert("Please enter some content");
+    if (!content)
+      return toast.error("Post cannot be empty", {
+        id: "post-empty",
+      });
 
     setIsSubmitting(true);
     createPost.mutate({ content });
@@ -60,19 +61,23 @@ export default function ThreadsNew() {
               />
             )}
             <div className="mt-8">
-              <textarea
-                className="w-full rounded border bg-transparent px-4 py-3"
+              <TextareaAutosize
+                className="w-full resize-none rounded border border-foreground bg-transparent px-4 py-3 outline-none focus:ring-2 focus:ring-foreground"
                 placeholder="Start a thread..."
                 value={content}
                 disabled={isSubmitting}
                 onChange={(event) => setContent(event.target.value)}
-              ></textarea>
+              />
+
+              <span className="text-sm font-semibold text-foreground">
+                {content.length}/500
+              </span>
             </div>
 
-            <div>
-              <button disabled={isSubmitting} className="text-xl text-blue-400">
+            <div className="flex justify-end">
+              <Button disabled={isSubmitting} type="submit">
                 Post
-              </button>
+              </Button>
             </div>
           </div>
         </form>

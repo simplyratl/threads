@@ -12,6 +12,7 @@ interface PostWithUser extends PostType {
   _count: {
     likes: number;
   };
+  likedByCurrentUser: boolean;
 }
 
 interface PostProps {
@@ -54,7 +55,12 @@ function Post({ post, image }: PostProps) {
         </div>
 
         <div className="relative -top-1 ml-[52px]">
-          <ControlBar postId={post.id} likes={post._count.likes} />
+          <ControlBar
+            postId={post.id}
+            likes={post._count.likes}
+            likedByCurrentUser={post.likedByCurrentUser}
+            userId={post.user.id}
+          />
         </div>
       </div>
 

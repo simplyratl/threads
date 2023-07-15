@@ -68,7 +68,7 @@ function PostUser({
                 {formatToNowDate(new Date(timestamp))}
               </span>
               {showTimestamp && (
-                <div className="absolute left-4 top-[calc(100%+4px)] z-40 flex h-full w-[140px] -translate-x-1/2 items-center justify-center rounded bg-accent px-2 text-sm">
+                <div className="absolute left-1/2 top-[calc(100%+4px)] z-40 flex h-full w-[140px] -translate-x-1/2 items-center justify-center rounded bg-accent px-2 text-sm">
                   {format(new Date(timestamp), "HH:mm - MM/dd/yyyy")}
                 </div>
               )}

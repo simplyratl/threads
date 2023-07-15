@@ -12,6 +12,27 @@ export const postRouter = createTRPCRouter({
   create: protectedProcedure
     .input(z.object({ content: z.string() }))
     .mutation(async ({ input: { content }, ctx }) => {
+      const HOUR_IN_MS = 60 * 60 * 1000;
+      const MAX_THREADS_PER_HOUR = 5;
+
+      const userId = ctx.session.user.id;
+
+      const threadsInLastHour = await ctx.prisma.post.count({
+        where: {
+          userId,
+          createdAt: {
+            gte: new Date(Date.now() - HOUR_IN_MS),
+          },
+        },
+      });
+
+      // Check if the user has exceeded the thread limit
+      if (threadsInLastHour >= MAX_THREADS_PER_HOUR) {
+        throw new Error(
+          `You have reached the maximum thread limit of ${MAX_THREADS_PER_HOUR} in an hour. Please try again later`
+        );
+      }
+
       const thread = await ctx.prisma.post.create({
         data: {
           content,
@@ -62,6 +83,27 @@ export const postRouter = createTRPCRouter({
       if (existingPost === null) {
         await ctx.prisma.like.create({ data });
         liked = true;
+
+        const post = await ctx.prisma.post.findUnique({
+          where: {
+            id: postId,
+          },
+          include: {
+            user: true,
+          },
+        });
+
+        if (post) {
+          if (ctx.session.user.id === post.user.id) return;
+
+          await ctx.prisma.notification.create({
+            data: {
+              userId: post.user.id,
+              type: "like",
+              postId: postId,
+            },
+          });
+        }
       } else {
         await ctx.prisma.like.delete({ where: { userId_postId: data } });
         liked = false;
@@ -147,5 +189,13 @@ async function getInfinitePosts({
     }
   }
 
-  return { posts, nextCursor };
+  return {
+    posts: posts.map((post) => {
+      return {
+        ...post,
+        likedByCurrentUser: post.likes?.length === 1,
+      };
+    }),
+    nextCursor,
+  };
 }

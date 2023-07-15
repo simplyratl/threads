@@ -1,16 +1,15 @@
-import React from "react";
+import { signIn, useSession } from "next-auth/react";
 import { useTheme } from "next-themes";
-import { usePathname } from "next/navigation";
-import Link from "next/link";
 import Image from "next/image";
-import { signIn, signOut, useSession } from "next-auth/react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import React from "react";
 import {
+  HiHeart,
   HiHome,
   HiMagnifyingGlass,
-  HiMiniBell,
   HiMiniPencilSquare,
-  HiOutlineArrowLeftOnRectangle,
-  HiOutlineBell,
+  HiOutlineHeart,
   HiOutlineHome,
   HiOutlineMagnifyingGlass,
   HiOutlineUser,
@@ -46,8 +45,8 @@ function Navbar() {
     {
       name: "Notifications",
       href: "/notifications",
-      icon: <HiOutlineBell className="h-8 w-8 md:h-7 md:w-7" />,
-      activeIcon: <HiMiniBell className="h-8 w-8 md:h-7 md:w-7" />,
+      icon: <HiOutlineHeart className="h-8 w-8 md:h-7 md:w-7" />,
+      activeIcon: <HiHeart className="h-8 w-8 md:h-7 md:w-7" />,
       private: false,
     },
     {
@@ -60,6 +59,10 @@ function Navbar() {
   ];
 
   function displayProfileImage() {
+    if (!session?.user) {
+      return <HiOutlineUser className="h-8 w-8 rounded-full md:h-7 md:w-7" />;
+    }
+
     return (
       <div className="h-6 w-6 overflow-hidden rounded-full">
         <Image
@@ -94,47 +97,16 @@ function Navbar() {
       >
         <Link
           href={link.href}
-          className={`flex items-center gap-2 px-2 py-2 text-lg ${
+          className={`flex items-center gap-2 px-2 py-2 text-lg text-foreground ${
             active ? "font-bold" : ""
           }`}
         >
           <span>{active ? link.activeIcon : link.icon}</span>
-          <span className="hidden lg:block">{link.name}</span>
+          <span className="hidden font-medium lg:block">{link.name}</span>
         </Link>
       </li>
     );
   }
-
-  const authButton = () => {
-    if (session) {
-      return (
-        <button
-          className="flex w-full items-center gap-2 px-2 py-2 text-lg"
-          onClick={() => void signOut()}
-        >
-          <span>
-            <HiOutlineArrowLeftOnRectangle className="h-8 w-8 md:h-7 md:w-7" />
-          </span>
-          <span className="hidden lg:block">Logout</span>
-          <span className="hidden lg:block">
-            {session?.user.name?.split(" ")[0]}
-          </span>
-        </button>
-      );
-    } else {
-      return (
-        <button
-          className="flex w-full items-center gap-2 px-2 py-2 text-lg"
-          onClick={() => void signIn()}
-        >
-          <span>
-            <HiOutlineUser className="h-8 w-8 md:h-7 md:w-7" />
-          </span>
-          <span className="hidden lg:block">Login</span>
-        </button>
-      );
-    }
-  };
 
   return (
     <header className="fixed bottom-0 left-0 z-50 h-20 w-full border-r bg-background px-4 py-6 md:bottom-auto md:top-0 md:h-screen md:w-20 lg:w-[330px]">
@@ -157,7 +129,21 @@ function Navbar() {
           <div className="w-full md:mt-8 md:w-auto">
             <ul className="flex w-full justify-between gap-2 md:w-auto md:flex-col md:justify-start">
               {links.map((link) => displayLink(link))}
-              <li className={`rounded-lg hover:bg-accent`}>{authButton()}</li>
+              {!session?.user && (
+                <li
+                  className={`cursor-pointer rounded-lg hover:bg-accent`}
+                  onClick={() => void signIn()}
+                >
+                  <div
+                    className={`flex items-center gap-2 px-2 py-2 text-lg font-semibold text-foreground`}
+                  >
+                    <span>
+                      <HiOutlineUser className="h-8 w-8 rounded-full md:h-7 md:w-7" />
+                    </span>
+                    <span className="hidden lg:block">Profile</span>
+                  </div>
+                </li>
+              )}
             </ul>
           </div>
         </div>
