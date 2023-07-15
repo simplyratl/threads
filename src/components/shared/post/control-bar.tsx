@@ -38,6 +38,7 @@ function ControlBar({
 
   useLayoutEffect(() => {
     if (likedByCurrentUserState === likedByCurrentUser) return;
+    if (!session?.user) return;
     setLikedByCurrentUserState(likedByCurrentUser);
   }, [likedByCurrentUser]);
 
