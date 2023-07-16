@@ -5,6 +5,7 @@ import TextareaAutosize from "react-textarea-autosize";
 import { api } from "~/utils/api";
 import Button from "../button";
 import PostUserComment from "./post-user-comment";
+import Loading from "~/components/shared/loading";
 
 interface CommentsProps {
   postId: string;
@@ -97,7 +98,7 @@ export default function Comments({ postId, post }: CommentsProps) {
     return null;
   };
 
-  console.log(postId);
+  if(isLoading) return <Loading />
 
   return (
     <div>

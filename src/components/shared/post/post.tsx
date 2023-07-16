@@ -51,7 +51,7 @@ function Post({ post, image }: PostProps) {
 
         <div className="relative -top-4 ml-[52px]">
           <div className="">
-            <p>{post.content}</p>
+            <p className={`break-before-auto whitespace-break-spaces ${post.content.split(" ").length === 1 ? "break-all" : "break-words"}`}>{post.content}</p>
 
             {image && (
               <div
