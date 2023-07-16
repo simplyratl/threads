@@ -15,22 +15,19 @@ function ImagePreview({
   show,
   startPosition,
 }: ImagePreviewProps) {
-  useEffect(() => {
-    if (show) document.body.style.overflow = "hidden";
-    else document.body.style.overflow = "auto";
-  }, [show]);
+  // useEffect(() => {
+  //   if (show) document.body.style.overflow = "hidden";
+  //   else document.body.style.overflow = "auto";
+  // }, [show]);
   const handleClick = () => {
     setShow(false);
   };
 
   const min = Math.min(window.innerWidth, window.innerHeight);
 
-  const adjLeft = min * 0.35;
-  const adjTop = min * 0.35;
-
   const isMobile = window.innerWidth < 768; // Adjust this breakpoint as needed
-  const adjustmentLeft = isMobile ? min * 0.35 : min * 0.28; // Adjust the values as needed
-  const adjustmentTop = isMobile ? min * 0.35 : min * 0.28; // Adjust the values as needed
+  const adjustmentLeft = isMobile ? min * 0.35 : min * 0.23; // Adjust the values as needed
+  const adjustmentTop = isMobile ? min * 0.35 : min * 0.23; // Adjust the values as needed
 
   return (
     <AnimatePresence>
@@ -48,7 +45,7 @@ function ImagePreview({
             className="fixed inset-0 z-50 flex h-full w-full items-center justify-center"
             initial={{
               // opacity: 0,
-              scale: 0.7,
+              scale: 0.6,
               top: startPosition?.top + adjustmentTop,
               left: startPosition?.left + adjustmentLeft,
               x: "-50%",
@@ -65,8 +62,8 @@ function ImagePreview({
               zIndex: 50,
             }}
             exit={{
-              opacity: 0,
-              scale: 0.7,
+              // opacity: 0,
+              scale: 0.6,
               top: startPosition?.top + adjustmentTop,
               left: startPosition?.left + adjustmentLeft,
               x: "-50%",

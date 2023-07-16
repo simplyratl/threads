@@ -30,3 +30,7 @@ body{
 .disable-tap-highlight:active {
   -webkit-tap-highlight-color: transparent;
 }
+
+[data-rmiz-modal-overlay="visible"] {
+  background-color: hsla(0,0%,0%, .8) !important; /* Replace with your desired color */
+}

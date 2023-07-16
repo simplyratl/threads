@@ -8,6 +8,8 @@ import { Post as PostType, User } from "@prisma/client";
 import Link from "next/link";
 // import { Post, User } from "@prisma/client";
 import { motion } from "framer-motion";
+import Zoom from "react-medium-image-zoom";
+import "react-medium-image-zoom/dist/styles.css";
 
 export interface PostWithUser extends PostType {
   user: User;
@@ -71,13 +73,16 @@ function Post({ post, image }: PostProps) {
                   handleClick(e);
                 }}
               >
-                <Image
-                  src={post.media}
-                  alt={post.content}
-                  fill
-                  priority
-                  className="!relative max-h-[400px] w-full object-cover lg:object-contain"
-                />
+                <Zoom>
+                  <img src={post.media} alt={post.content} width="500" />
+                </Zoom>
+                {/*<Image*/}
+                {/*  src={post.media}*/}
+                {/*  alt={post.content}*/}
+                {/*  fill*/}
+                {/*  priority*/}
+                {/*  className="!relative max-h-[400px] w-full object-cover lg:object-contain"*/}
+                {/*/>*/}
               </motion.div>
             )}
           </div>
@@ -94,12 +99,12 @@ function Post({ post, image }: PostProps) {
         </div>
       </Link>
 
-      <ImagePreview
-        image={post.media as string}
-        show={imagePreview}
-        setShow={setImagePreview}
-        startPosition={imageRef.current?.getBoundingClientRect()}
-      />
+      {/*<ImagePreview*/}
+      {/*  image={post.media as string}*/}
+      {/*  show={imagePreview}*/}
+      {/*  setShow={setImagePreview}*/}
+      {/*  startPosition={imageRef.current?.getBoundingClientRect()}*/}
+      {/*/>*/}
     </article>
   );
 }
