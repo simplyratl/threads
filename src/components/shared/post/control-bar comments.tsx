@@ -54,7 +54,7 @@ function ControlBarComment({
           if (comm.id === comment.parentId) {
             return {
               ...comm,
-              childComments: [...comm.childComments, comment],
+              childComments: [...(comm.childComments ?? []), comment],
             };
           }
 
@@ -107,6 +107,8 @@ function ControlBarComment({
 
     setLikedByCurrentUserState(!likedByCurrentUserState);
   }
+
+  console.log(showAddCommentModal);
 
   return (
     <>
@@ -177,7 +179,7 @@ function ControlBarComment({
               placeholder="Add a comment..."
               value={content}
               maxRows={20}
-              // disabled={isSubmitting}
+              disabled={addChildComment.isLoading}
               onChange={(event) => setContent(event.target.value)}
               maxLength={500}
             />

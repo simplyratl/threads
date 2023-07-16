@@ -75,7 +75,7 @@ export default function ThreadsNew() {
       .then((url) => {
         if (!url) return;
 
-        const multimediaType = isImage(file as File) ? "IMAGE" : "VIDEO";
+        const multimediaType = isImage(file) ? "IMAGE" : "VIDEO";
 
         setIsSubmitting(true);
         createPost.mutate({

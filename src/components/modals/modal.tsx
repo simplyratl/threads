@@ -71,7 +71,7 @@ const Modal = ({ setShow, show, children, title }: ModalProps) => {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.84 }}
             ref={contentRef}
-            className="mx-4 mt-20 h-fit max-h-[80%] min-h-[366px] w-full rounded-2xl bg-accent p-4 sm:mx-0 sm:w-[600px]"
+            className="mx-4 mt-20 h-fit max-h-[80%] w-full rounded-2xl bg-accent p-4 sm:mx-0 sm:w-[600px]"
           >
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-semibold">{title}</h2>
