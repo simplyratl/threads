@@ -6,13 +6,14 @@ import HomeProfile from "~/components/home/home-profile";
 import Posts from "~/components/shared/post/posts";
 import { api } from "~/utils/api";
 import {PostWithUser} from "~/components/shared/post/post";
+import AlertTopBar from "~/components/shared/alert-top-bar";
 
 export default function Home() {
   const [isVisible, setIsVisible] = useState(true);
   const logoRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: logoRef,
-    offset: ["26%", "0"],
+    offset: ["35%", "5%"],
   });
 
   const postsData = api.posts.infinitePosts.useInfiniteQuery(
@@ -33,6 +34,10 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="mx-auto min-h-screen max-w-4xl px-4 md:ml-20 lg:ml-[34%] lg:p-0">
+        <div>
+          <AlertTopBar />
+        </div>
+
         <div className="mx-auto block h-10 w-10 md:hidden">
           <motion.div
             ref={logoRef}

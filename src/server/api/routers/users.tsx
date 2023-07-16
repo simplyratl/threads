@@ -125,4 +125,18 @@ export const userRouter = createTRPCRouter({
 
       return { addedFollow };
     }),
+  searchUsers: publicProcedure
+    .input(z.object({ search: z.string() }))
+    .query(async ({ input: { search }, ctx }) => {
+      const users = await ctx.prisma.user.findMany({
+        where: {
+          name: {
+            contains: search,
+            mode: "insensitive",
+          },
+        },
+      });
+
+      return users;
+    }),
 });
