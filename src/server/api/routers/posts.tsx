@@ -62,6 +62,7 @@ export const postRouter = createTRPCRouter({
           _count: {
             select: {
               likes: true,
+              comments: true,
             },
           },
         },
@@ -211,6 +212,7 @@ async function getInfinitePosts({
       _count: {
         select: {
           likes: true,
+          comments: true,
         },
       },
     },

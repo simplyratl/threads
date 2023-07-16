@@ -8,6 +8,7 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         accent: "hsl(var(--accent))",
+        background_overlay: "hsla(var(--background), 0.8)",
       },
     },
   },

@@ -41,12 +41,19 @@ export const userRouter = createTRPCRouter({
               user: true,
             },
           },
-          followers: true,
-          following: true,
+          _count: {
+            select: {
+              followers: true,
+              following: true,
+            },
+          },
         },
       });
 
-      return user;
+      return {
+        ...user,
+        currUserFollowing: (user && user?._count.followers > 0) ?? false,
+      };
     }),
   getRecommendedUsers: publicProcedure
     .input(z.object({ userId: z.string().optional() }))
@@ -59,5 +66,63 @@ export const userRouter = createTRPCRouter({
       });
 
       return recommendedUsers;
+    }),
+  toggleFollow: protectedProcedure
+    .input(z.object({ userId: z.string() }))
+    .mutation(async ({ input: { userId }, ctx }) => {
+      const currentUser = ctx.session.user;
+      let addedFollow = false;
+
+      const existingFollow = await ctx.prisma.user.findFirst({
+        where: {
+          id: userId,
+          followers: {
+            some: {
+              id: currentUser.id,
+            },
+          },
+        },
+      });
+
+      if (!existingFollow) {
+        await ctx.prisma.user.update({
+          where: {
+            id: userId,
+          },
+          data: {
+            followers: {
+              connect: {
+                id: currentUser.id,
+              },
+            },
+          },
+        });
+
+        await ctx.prisma.notification.create({
+          data: {
+            userId: userId,
+            senderUserId: currentUser.id,
+            type: "follow",
+          },
+        });
+
+        addedFollow = true;
+      } else {
+        await ctx.prisma.user.update({
+          where: {
+            id: userId,
+          },
+          data: {
+            followers: {
+              disconnect: {
+                id: currentUser.id,
+              },
+            },
+          },
+        });
+        addedFollow = false;
+      }
+
+      return { addedFollow };
     }),
 });

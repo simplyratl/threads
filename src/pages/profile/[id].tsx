@@ -4,11 +4,13 @@ import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "react-hot-toast";
 import { MdVerified } from "react-icons/md";
 import Button from "~/components/shared/button";
 import Posts from "~/components/shared/post/posts";
 import { api } from "~/utils/api";
 import { ssgHelper } from "~/utils/ssg";
+import {PostWithUser} from "~/components/shared/post/post";
 
 const tabs = ["Threads", "Replies"];
 
@@ -27,6 +29,34 @@ const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   const { data: session } = useSession();
   const loggedUser = session?.user;
 
+  const trpcUtils = api.useContext();
+
+  const toggleFollow = api.users.toggleFollow.useMutation({
+    onSuccess: (follow) => {
+      if (follow.addedFollow) {
+        toast.success("Followed!", { id: "follow" });
+      } else {
+        toast.success("Unfollowed!", { id: "follow" });
+      }
+
+      const updateData = (oldData: any) => {
+        if (!oldData) return;
+        const counterModifier = follow.addedFollow ? 1 : -1;
+
+        return {
+          ...oldData,
+          currUserFollowing: follow.addedFollow,
+          _count: {
+            ...oldData._count,
+            followers: oldData._count.followers + counterModifier,
+          },
+        };
+      };
+
+      trpcUtils.users.getByID.setData({ id }, updateData);
+    },
+  });
+
   const postsData = api.posts.infiniteProfileFeed.useInfiniteQuery(
     { userId: user?.id ?? null },
     {
@@ -35,10 +65,16 @@ const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
     }
   );
 
-  const posts = postsData.data?.pages.flatMap((page) => page.posts);
+  const posts: any = postsData.data?.pages.flatMap((page) => page.posts);
 
   const handleActiveTab = (tab: string) => {
     setActiveTab(tab);
+  };
+
+  const handleToggleFollow = () => {
+    if (!loggedUser) return toast.error("You must be logged in to follow!");
+
+    toggleFollow.mutate({ userId: user?.id as string });
   };
 
   return (
@@ -81,8 +117,23 @@ const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                       </Button>
                     </>
                   ) : (
-                    <button>Follow</button>
+                    <Button
+                      variant={!user?.currUserFollowing ? "outline" : "default"}
+                      onClick={() => handleToggleFollow()}
+                      disabled={toggleFollow.isLoading}
+                    >
+                      {user && user.currUserFollowing ? "Unfollow" : "Follow"}
+                    </Button>
                   )}
+                </div>
+
+                <div className="mt-4 flex items-center gap-4">
+                  <span className="font-semibold">
+                    Followers {user?._count?.followers}
+                  </span>
+                  <span className="font-semibold">
+                    Following {user?._count?.following}
+                  </span>
                 </div>
               </div>
             </div>

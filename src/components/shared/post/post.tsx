@@ -8,10 +8,12 @@ import { Post as PostType, User } from "@prisma/client";
 import Link from "next/link";
 // import { Post, User } from "@prisma/client";
 
-interface PostWithUser extends PostType {
+export interface PostWithUser extends PostType {
   user: User;
   _count: {
     likes: number;
+    comments: number;
+    followers?: number;
   };
   likedByCurrentUser: boolean;
 }
@@ -29,11 +31,13 @@ function Post({ post, image }: PostProps) {
     event.preventDefault();
   };
 
+  console.log(post);
+
   return (
     <article>
       <Link
         href={`/thread/${post.id}`}
-        className="disable-tap-highlight relative block overflow-hidden rounded-lg p-3 transition-colors duration-150 before:absolute before:left-[18px] before:top-14 before:h-full before:w-0.5 before:bg-accent hover:bg-transparent md:hover:bg-accent"
+        className="disable-tap-highlight relative block overflow-hidden rounded-lg p-3 transition-colors duration-150 before:absolute before:left-[30px] before:top-14 before:h-full before:w-0.5 before:bg-accent hover:bg-transparent md:hover:bg-accent"
       >
         <div className="w-fit" onClick={handleClick}>
           <PostUser
@@ -69,6 +73,7 @@ function Post({ post, image }: PostProps) {
           <ControlBar
             postId={post.id}
             likes={post._count.likes}
+            comments={post._count.comments}
             likedByCurrentUser={post.likedByCurrentUser}
             userId={post.user.id}
           />

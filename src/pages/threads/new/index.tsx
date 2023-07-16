@@ -12,9 +12,9 @@ export default function ThreadsNew() {
 
   const [content, setContent] = useState<string>("");
 
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [blockSending, setBlockSending] = useState<boolean>(false);
 
-  const trpcUtils = api.useContext();
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const createPost = api.posts.create.useMutation({
     onSuccess: (post) => {
@@ -23,13 +23,22 @@ export default function ThreadsNew() {
       setIsSubmitting(false);
     },
     onError: (error) => {
-      toast.error(error.message);
+      toast.error(error.message, { id: "post-error" });
       setIsSubmitting(false);
+      setBlockSending(true);
     },
   });
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if (blockSending)
+      return toast.error(
+        "You are not allowed to post threads at the moment. Please try again later.",
+        {
+          id: "post-error",
+        }
+      );
 
     if (!content)
       return toast.error("Post cannot be empty", {

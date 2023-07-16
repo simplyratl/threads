@@ -2,6 +2,7 @@ import { Notification, User } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect } from "react";
 import Loading from "~/components/shared/loading";
 import { api } from "~/utils/api";
@@ -35,6 +36,8 @@ export default function Home() {
         return "liked your post";
       case "reply":
         return "replied to your post";
+      case "reply_child":
+        return "replied to your comment";
       case "mention":
         return "mentioned you in a post";
       default:
@@ -46,6 +49,21 @@ export default function Home() {
     if (isLoading && session?.user) {
       return <Loading />;
     }
+  }
+
+  function urlToNotification(notification: NotificationWithUser) {
+    const { type } = notification;
+
+    if (type === "follow") {
+      return `/profile/${notification.sender.id}`;
+    } else if (
+      (type === "like" || type === "reply" || type === "reply_child") &&
+      notification.postId
+    ) {
+      return `/thread/${notification.postId}`;
+    }
+
+    return "/";
   }
 
   return (
@@ -65,29 +83,34 @@ export default function Home() {
             <ul>
               {notifications && notifications.length > 0 ? (
                 notifications.map((notification: NotificationWithUser) => (
-                  <li className="flex w-full gap-3 pt-2" key={notification.id}>
-                    <div className="h-11 w-11 flex-shrink-0 overflow-hidden rounded-full">
-                      <Image
-                        src={notification.sender.image as string}
-                        alt={notification.sender.name as string}
-                        fill
-                        className="!relative h-full w-full object-cover"
-                      />
-                    </div>
-                    <div className="w-full border-b border-accent pb-3">
-                      <div className="flex items-center gap-2">
-                        <h4 className="text-base font-semibold">
-                          {notification.sender.name}
-                        </h4>
-                        <span className="text-sm text-foreground">
-                          {formatToNowDate(new Date(notification.createdAt))}
-                        </span>
+                  <Link
+                    href={urlToNotification(notification)}
+                    key={notification.id}
+                  >
+                    <li className="flex w-full gap-3 rounded-lg px-4 pt-2 hover:bg-accent">
+                      <div className="h-11 w-11 flex-shrink-0 overflow-hidden rounded-full">
+                        <Image
+                          src={notification.sender.image as string}
+                          alt={notification.sender.name as string}
+                          fill
+                          className="!relative h-full w-full object-cover"
+                        />
                       </div>
-                      <p className="m-0 text-base text-foreground">
-                        {formatNotificationType(notification.type)}
-                      </p>
-                    </div>
-                  </li>
+                      <div className="w-full border-b border-accent pb-3">
+                        <div className="flex items-center gap-2">
+                          <h4 className="text-base font-semibold">
+                            {notification.sender.name}
+                          </h4>
+                          <span className="text-sm text-foreground">
+                            {formatToNowDate(new Date(notification.createdAt))}
+                          </span>
+                        </div>
+                        <p className="m-0 text-base text-foreground">
+                          {formatNotificationType(notification.type)}
+                        </p>
+                      </div>
+                    </li>
+                  </Link>
                 ))
               ) : !isLoading ? (
                 <span className="text-lg text-foreground">

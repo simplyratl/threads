@@ -16,15 +16,22 @@ const Button = ({
       ? "border border-foreground bg-transparent hover:bg-accent hover:bg-opacity-10"
       : "border-transparent bg-accent hover:opacity-60";
 
-  const variantClass = variant === "default" ? "bg-accent" : "";
+  const variantClass = ():string => {
+    if (variant === "default") return "bg-accent";
+    if (variant === "minimal")
+      return "bg-transparent text-blue-500 font-semibold";
+
+    return ""
+  };
+
   const disabledClass = rest.disabled ? "opacity-50" : "";
 
   return (
     <button
       type="button"
-      className={`${
+      className={`px-4 py-0.5 ${variantClass()} ${outlineClass} ${disabledClass} rounded border transition-all ${
         className ?? ""
-      }  ${variantClass} ${outlineClass} ${disabledClass} rounded border px-4 py-0.5 transition-all`}
+      }`}
       {...rest}
     >
       {children}

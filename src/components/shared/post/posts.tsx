@@ -9,6 +9,8 @@ interface PostWithUser extends PostType {
   user: User;
   _count: {
     likes: number;
+    comments: number;
+    followers: number;
   };
   likedByCurrentUser: boolean;
 }

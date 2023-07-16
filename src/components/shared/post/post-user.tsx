@@ -47,7 +47,7 @@ function PostUser({
       rel="noopener noreferrer"
       className={`flex items-start ${className ?? ""}`}
     >
-      <div className={`${imageSize} overflow-hidden rounded-full`}>
+      <div className={`${imageSize} overflow-hidden rounded-full `}>
         <Image
           src={avatar}
           alt="test"

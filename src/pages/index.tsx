@@ -5,6 +5,7 @@ import { useRef, useState } from "react";
 import HomeProfile from "~/components/home/home-profile";
 import Posts from "~/components/shared/post/posts";
 import { api } from "~/utils/api";
+import {PostWithUser} from "~/components/shared/post/post";
 
 export default function Home() {
   const [isVisible, setIsVisible] = useState(true);
@@ -22,7 +23,7 @@ export default function Home() {
     }
   );
 
-  const posts = postsData.data?.pages.flatMap((page) => page.posts);
+  const posts:any = postsData.data?.pages.flatMap((page) => page.posts);
 
   return (
     <>

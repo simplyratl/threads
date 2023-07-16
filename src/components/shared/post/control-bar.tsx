@@ -1,3 +1,4 @@
+import { Post } from "@prisma/client";
 import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
 import { useState, useLayoutEffect } from "react";
@@ -13,6 +14,7 @@ import { api } from "~/utils/api";
 type ControlBarProps = {
   postId: string;
   likes: number;
+  comments: number;
   likedByCurrentUser: boolean;
   userId: string;
 };
@@ -20,6 +22,7 @@ type ControlBarProps = {
 function ControlBar({
   postId,
   likes,
+  comments,
   likedByCurrentUser,
   userId,
 }: ControlBarProps) {
@@ -81,8 +84,31 @@ function ControlBar({
       };
     };
 
+    const updateSinglePost = (oldData: any) => {
+      if (!oldData.post) return;
+
+      const post = oldData.post;
+
+      console.log(oldData);
+
+      const countModifier = !likedByCurrentUserState ? 1 : -1;
+
+      return {
+        ...oldData,
+        post: {
+          ...post,
+          likedByCurrentUser: !likedByCurrentUserState,
+          _count: {
+            ...post._count,
+            likes: post._count.likes + countModifier,
+          },
+        },
+      };
+    };
+
     trpcUtils.posts.infinitePosts.setInfiniteData({}, updateData);
     trpcUtils.posts.infiniteProfileFeed.setInfiniteData({ userId }, updateData);
+    trpcUtils.posts.getByID.setData({ id: postId }, updateSinglePost);
 
     Promise.resolve(toggleLike.mutate({ postId })).catch(() => {
       setLikedByCurrentUserState(false);
@@ -99,7 +125,7 @@ function ControlBar({
           >
             {!likedByCurrentUserState ? (
               <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                <AiOutlineHeart className="h-7 w-7" />
+                <AiOutlineHeart className="h-6 w-6" />
               </motion.div>
             ) : (
               <motion.div
@@ -108,7 +134,7 @@ function ControlBar({
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
               >
-                <AiFillHeart className="h-7 w-7 text-red-500" />
+                <AiFillHeart className="h-6 w-6 text-red-500" />
               </motion.div>
             )}
           </div>
@@ -120,8 +146,13 @@ function ControlBar({
           <AiOutlineSend className="h-6 w-6" />
         </div>
       </div>
-      <div className="mt-2">
-        <span className="font-semibold text-foreground">{likes} likes</span>
+      <div className="mt-2 flex items-center gap-2">
+        <span className="font-semibold text-foreground">
+          {likes ?? 0} likes
+        </span>
+        <span className="font-semibold text-foreground">
+          {comments ?? 0} comments
+        </span>
       </div>
     </div>
   );

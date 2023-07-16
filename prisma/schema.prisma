@@ -58,6 +58,8 @@ model User {
     notificationsSent Notification[] @relation("Sender")
     notifications Notification[]
 
+    comments Comment[]
+
     followers User[] @relation(name:"Followers")
     following User[] @relation(name:"Followers")
 }
@@ -80,6 +82,8 @@ model Post {
 
     likes Like[]
     notifications Notification[]
+
+    comments  Comment[]
 
     @@index([userId])
     @@unique([createdAt, id])
@@ -109,4 +113,19 @@ model Notification {
     sender         User     @relation("Sender", fields: [senderUserId], references: [id], onDelete: Cascade)
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   post       Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+}
+
+model Comment {
+  id           String      @id @default(cuid())
+  content      String
+  postId       String
+  post         Post     @relation(fields: [postId], references: [id])
+  parent       Comment? @relation("ChildComments", fields: [parentId], references: [id])
+  parentId     String?
+  childComments Comment[] @relation("ChildComments")
+
+  createdAt    DateTime @default(now())
+
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
