@@ -5,11 +5,33 @@ import { api } from "~/utils/api";
 import "~/styles/globals.css";
 import Providers from "~/components/providers";
 import Navbar from "~/components/shared/navbar";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
   pageProps: { session, ...pageProps },
 }) => {
+  const router = useRouter();
+
+  useEffect(() => {
+    const handleRouteChange = () => {
+      // Check if body overflow is set to "hidden"
+      if (document.body.style.overflow === "hidden") {
+        // Reset body overflow to "visible"
+        document.body.style.overflow = "visible";
+      }
+    };
+
+    // Listen for route changes and execute the effect
+    router.events.on("routeChangeComplete", handleRouteChange);
+
+    // Clean up the event listener
+    return () => {
+      router.events.off("routeChangeComplete", handleRouteChange);
+    };
+  }, []);
+
   return (
     <SessionProvider session={session}>
       <Providers>

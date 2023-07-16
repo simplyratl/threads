@@ -35,11 +35,15 @@ export default function ThreadsNew() {
       setContent("");
       toast.success("Post created");
       setIsSubmitting(false);
+      setFile(null);
+      setFilePreview(null);
     },
     onError: (error) => {
       toast.error(error.message, { id: "post-error" });
       setIsSubmitting(false);
       setBlockSending(true);
+      setFile(null);
+      setFilePreview(null);
     },
   });
 
@@ -58,6 +62,14 @@ export default function ThreadsNew() {
       return toast.error("Post cannot be empty", {
         id: "post-empty",
       });
+
+    if (!file) {
+      setIsSubmitting(true);
+      createPost.mutate({
+        content,
+      });
+      return;
+    }
 
     uploadImage()
       .then((url) => {

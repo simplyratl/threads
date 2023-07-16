@@ -13,8 +13,8 @@ export const postRouter = createTRPCRouter({
     .input(
       z.object({
         content: z.string(),
-        multimediaURL: z.string(),
-        multimediaType: z.string(),
+        multimediaURL: z.string().optional(),
+        multimediaType: z.string().optional(),
       })
     )
     .mutation(

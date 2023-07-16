@@ -127,6 +127,8 @@ const SearchInput = () => {
             </h4>
 
             {(!users || users.length === 0) &&
+              deboncedSearch.length > 2 &&
+              !isFetching &&
               displaySearchResults("No results found")}
             {renderList()}
           </motion.div>
