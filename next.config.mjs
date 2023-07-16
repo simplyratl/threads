@@ -12,6 +12,7 @@ const config = {
       "blogger.googleusercontent.com",
       "pbs.twimg.com",
       "lh3.googleusercontent.com",
+      "wxhaoxtosehvuuitysfj.supabase.co"
     ],
   },
 

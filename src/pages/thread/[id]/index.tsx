@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import React from "react";
 import Loading from "~/components/shared/loading";
 import Comments from "~/components/shared/post/comments";
-import Post, {PostWithUser} from "~/components/shared/post/post";
+import Post, { PostWithUser } from "~/components/shared/post/post";
 import { api } from "~/utils/api";
 
 export default function ThreadPage() {

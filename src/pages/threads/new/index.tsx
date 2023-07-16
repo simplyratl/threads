@@ -1,14 +1,26 @@
 import { useSession } from "next-auth/react";
 import Head from "next/head";
-import { useState } from "react";
+import React, { useRef, useState } from "react";
 import PostUser from "~/components/shared/post/post-user";
 import { api } from "~/utils/api";
 import toast from "react-hot-toast";
 import Button from "~/components/shared/button";
 import TextareaAutosize from "react-textarea-autosize";
+import { HiPaperClip } from "react-icons/hi2";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { v4 as uuidv4 } from "uuid";
+
+const CDNURL =
+  "https://wxhaoxtosehvuuitysfj.supabase.co/storage/v1/object/public/multimedia/";
 
 export default function ThreadsNew() {
   const { data: session } = useSession();
+  const supabase = useSupabaseClient();
+
+  const [file, setFile] = useState<File | null>(null);
+  const [filePreview, setFilePreview] = useState<string | null>(null);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [content, setContent] = useState<string>("");
 
@@ -45,11 +57,34 @@ export default function ThreadsNew() {
         id: "post-empty",
       });
 
-    setIsSubmitting(true);
-    createPost.mutate({ content });
+    uploadImage()
+      .then((url) => {
+        if (!url) return;
+
+        setIsSubmitting(true);
+        createPost.mutate({ content, multimediaURL: url });
+      })
+      .catch((error) => {
+        return toast.error(error.message, { id: "image-upload-error" });
+      });
   };
 
   if (!session?.user) return null;
+
+  const uploadImage = async () => {
+    if (!file) return;
+
+    const { data, error } = await supabase.storage
+      .from("multimedia")
+      .upload(`${session.user.id}/${uuidv4()}`, file);
+
+    if (error) {
+      toast.error(error.message, { id: "image-upload-error" });
+      return Promise.reject(error);
+    }
+
+    return `${CDNURL}/${data?.path}`;
+  };
 
   return (
     <>
@@ -79,17 +114,60 @@ export default function ThreadsNew() {
                 maxLength={500}
               />
 
-              <span className="text-sm font-semibold text-foreground">
-                {content.length}/500
-              </span>
+              <div className="mt-1 flex items-center justify-between">
+                <Button
+                  variant="minimal"
+                  className="!p-0 text-black dark:text-white"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <HiPaperClip size={24} />
+                </Button>
+
+                <span className="text-sm font-semibold text-foreground">
+                  {content.length}/500
+                </span>
+              </div>
             </div>
 
-            <div className="flex justify-end">
+            <div className="mt-4 flex justify-end">
               <Button disabled={isSubmitting} type="submit">
                 Post
               </Button>
             </div>
           </div>
+
+          {file && (
+            <div className="mt-8 w-full cursor-pointer overflow-hidden rounded-xl lg:w-fit">
+              <img
+                className="h-full w-full object-cover"
+                src={filePreview ?? ""}
+                alt="Preview of image"
+              />
+            </div>
+          )}
+
+          <input
+            type="file"
+            hidden
+            className="hidden"
+            ref={fileInputRef}
+            accept="image/*,video/mp4"
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+
+              if (!file) return;
+
+              setFile(file ?? null);
+              const reader = new FileReader();
+              reader.onload = (e) => {
+                // Access the file preview URL
+                const previewUrl = e.target?.result;
+                // Display the preview image
+                setFilePreview(previewUrl as string);
+              };
+              reader.readAsDataURL(file);
+            }}
+          />
         </form>
       </main>
     </>

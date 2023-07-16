@@ -85,11 +85,9 @@ function ControlBar({
     };
 
     const updateSinglePost = (oldData: any) => {
-      if (!oldData.post) return;
+      if (!oldData) return;
 
       const post = oldData.post;
-
-      console.log(oldData);
 
       const countModifier = !likedByCurrentUserState ? 1 : -1;
 

@@ -80,13 +80,15 @@ model Post {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String
 
+  media String?
+
   likes         Like[]
   notifications Notification[]
 
   comments Comment[]
 
-  @@index([userId])
   @@unique([createdAt, id])
+  @@index([userId])
 }
 
 model Like {

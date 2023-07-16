@@ -74,9 +74,7 @@ const Modal = ({ setShow, show, children, title }: ModalProps) => {
             className="mx-4 mt-20 h-fit max-h-[80%] min-h-[366px] w-full rounded-2xl bg-accent p-4 sm:mx-0 sm:w-[600px]"
           >
             <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-semibold text-foreground">
-                {title}
-              </h2>
+              <h2 className="text-2xl font-semibold">{title}</h2>
               <Button
                 variant="outline"
                 className="m-0 flex h-7 w-7 flex-shrink-0 items-center justify-center !p-0"

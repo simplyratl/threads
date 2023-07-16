@@ -14,7 +14,7 @@ import Modal from "~/components/modals/modal";
 import { api } from "~/utils/api";
 import Button from "../button";
 import PostUserComment from "./post-user-comment";
-import {CommentWithChildren} from "~/components/shared/post/comments";
+import { CommentWithChildren } from "~/components/shared/post/comments";
 
 type ControlBarCommentProps = {
   comment: CommentWithChildren;
@@ -166,8 +166,8 @@ function ControlBarComment({
           />
 
           <div className="mt-2 text-xs">
-            <p>
-              replaying to <span className="">{comment.user.name}</span>
+            <p className="font-semibold text-foreground">
+              replying to <span className="">{comment.user.name}</span>
             </p>
           </div>
 

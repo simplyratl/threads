@@ -10,8 +10,8 @@ import {
 
 export const postRouter = createTRPCRouter({
   create: protectedProcedure
-    .input(z.object({ content: z.string() }))
-    .mutation(async ({ input: { content }, ctx }) => {
+    .input(z.object({ content: z.string(), multimediaURL: z.string() }))
+    .mutation(async ({ input: { content, multimediaURL }, ctx }) => {
       const HOUR_IN_MS = 60 * 60 * 1000;
       const MAX_THREADS_PER_HOUR = 5;
 
@@ -36,6 +36,7 @@ export const postRouter = createTRPCRouter({
       const thread = await ctx.prisma.post.create({
         data: {
           content,
+          media: multimediaURL,
           userId: ctx.session.user.id,
         },
         select: {
@@ -207,6 +208,7 @@ async function getInfinitePosts({
       createdAt: true,
       userId: true,
       user: true,
+      media: true,
       likes:
         currentUserId === null ? false : { where: { userId: currentUserId } },
       _count: {

@@ -75,7 +75,7 @@ const SearchInput = () => {
                 users.map((user: User) => (
                   <li className="" key={user.id}>
                     <Link
-                      href="#"
+                      href={`/profile/${user.id}`}
                       className="flex items-center justify-between  px-6 py-2 hover:bg-background"
                     >
                       <div className="relative -left-1">
@@ -86,7 +86,6 @@ const SearchInput = () => {
                           small
                         />
                       </div>
-                      <Button variant="minimal">Follow</Button>
                     </Link>
                   </li>
                 ))}

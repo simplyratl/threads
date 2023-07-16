@@ -70,7 +70,11 @@ export default function Comments({ postId, post }: CommentsProps) {
         !showComments.find((c) => c.commentId === comment.id)
       ) {
         return (
-          <Button onClick={() => showParentCommentsClick(comment)}>
+          <Button
+            variant="minimal"
+            className="!p-0 text-sm text-foreground"
+            onClick={() => showParentCommentsClick(comment)}
+          >
             Show replies
           </Button>
         );
@@ -98,7 +102,7 @@ export default function Comments({ postId, post }: CommentsProps) {
     return null;
   };
 
-  if(isLoading) return <Loading />
+  if (isLoading) return <Loading />;
 
   return (
     <div>

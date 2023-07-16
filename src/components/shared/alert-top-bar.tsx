@@ -1,8 +1,8 @@
-import React from 'react';
-import {api} from "~/utils/api";
+import React from "react";
+import { api } from "~/utils/api";
 
 const AlertTopBar = () => {
-  const {data:alert, isLoading} = api.alerts.getAlert.useQuery(undefined, {
+  const { data: alert, isLoading } = api.alerts.getAlert.useQuery(undefined, {
     refetchOnWindowFocus: false,
     staleTime: Infinity,
     cacheTime: Infinity,
@@ -11,8 +11,8 @@ const AlertTopBar = () => {
   if (isLoading || !alert) return null;
 
   return (
-    <div className="max-h-[320px]:bg-red-500 bg-accent rounded-xl px-4 py-2 flex items-center justify-center lg:max-w-[34rem] mb-4 md:m-0 overflow-hidden">
-      <span className="text-base font-semibold whitespace-break-spaces break-words text-center">
+    <div className="max-h-[320px]:bg-red-500 mb-4 flex items-center justify-center overflow-hidden rounded-xl bg-accent px-4 py-2 md:m-0 lg:w-[calc(100%-360px)]">
+      <span className="whitespace-break-spaces break-words text-center text-base font-semibold">
         {alert.content}
       </span>
     </div>
