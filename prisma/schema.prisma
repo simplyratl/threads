@@ -80,7 +80,8 @@ model Post {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String
 
-  media String?
+  media     String?
+  mediaType MediaType?
 
   likes         Like[]
   notifications Notification[]
@@ -89,6 +90,11 @@ model Post {
 
   @@unique([createdAt, id])
   @@index([userId])
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
 }
 
 model Like {

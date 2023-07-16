@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { MediaType, Prisma } from "@prisma/client";
 import { inferAsyncReturnType } from "@trpc/server";
 import { z } from "zod";
 import {
@@ -10,46 +10,55 @@ import {
 
 export const postRouter = createTRPCRouter({
   create: protectedProcedure
-    .input(z.object({ content: z.string(), multimediaURL: z.string() }))
-    .mutation(async ({ input: { content, multimediaURL }, ctx }) => {
-      const HOUR_IN_MS = 60 * 60 * 1000;
-      const MAX_THREADS_PER_HOUR = 5;
+    .input(
+      z.object({
+        content: z.string(),
+        multimediaURL: z.string(),
+        multimediaType: z.string(),
+      })
+    )
+    .mutation(
+      async ({ input: { content, multimediaURL, multimediaType }, ctx }) => {
+        const HOUR_IN_MS = 60 * 60 * 1000;
+        const MAX_THREADS_PER_HOUR = 5;
 
-      const userId = ctx.session.user.id;
+        const userId = ctx.session.user.id;
 
-      const threadsInLastHour = await ctx.prisma.post.count({
-        where: {
-          userId,
-          createdAt: {
-            gte: new Date(Date.now() - HOUR_IN_MS),
+        const threadsInLastHour = await ctx.prisma.post.count({
+          where: {
+            userId,
+            createdAt: {
+              gte: new Date(Date.now() - HOUR_IN_MS),
+            },
           },
-        },
-      });
+        });
 
-      // Check if the user has exceeded the thread limit
-      if (threadsInLastHour >= MAX_THREADS_PER_HOUR) {
-        throw new Error(
-          `You have reached the maximum thread limit of ${MAX_THREADS_PER_HOUR} in an hour. Please try again later`
-        );
+        // Check if the user has exceeded the thread limit
+        if (threadsInLastHour >= MAX_THREADS_PER_HOUR) {
+          throw new Error(
+            `You have reached the maximum thread limit of ${MAX_THREADS_PER_HOUR} in an hour. Please try again later`
+          );
+        }
+
+        const thread = await ctx.prisma.post.create({
+          data: {
+            content,
+            media: multimediaURL,
+            userId: ctx.session.user.id,
+            mediaType: multimediaType as MediaType,
+          },
+          select: {
+            id: true,
+            content: true,
+            createdAt: true,
+            userId: true,
+            user: true,
+          },
+        });
+
+        return thread;
       }
-
-      const thread = await ctx.prisma.post.create({
-        data: {
-          content,
-          media: multimediaURL,
-          userId: ctx.session.user.id,
-        },
-        select: {
-          id: true,
-          content: true,
-          createdAt: true,
-          userId: true,
-          user: true,
-        },
-      });
-
-      return thread;
-    }),
+    ),
   getByID: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input: { id }, ctx }) => {
@@ -202,21 +211,11 @@ async function getInfinitePosts({
     cursor: cursor ? { createdAt_id: cursor } : undefined,
     orderBy: [{ createdAt: "desc" }, { id: "desc" }],
     where: whereClause,
-    select: {
-      id: true,
-      content: true,
-      createdAt: true,
-      userId: true,
+    include: {
       user: true,
-      media: true,
       likes:
         currentUserId === null ? false : { where: { userId: currentUserId } },
-      _count: {
-        select: {
-          likes: true,
-          comments: true,
-        },
-      },
+      _count: true,
     },
   });
 

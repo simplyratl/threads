@@ -10,6 +10,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import Zoom from "react-medium-image-zoom";
 import "react-medium-image-zoom/dist/styles.css";
+import VideoPlayer from "~/components/shared/video-player";
 
 export interface PostWithUser extends PostType {
   user: User;
@@ -73,16 +74,17 @@ function Post({ post, image }: PostProps) {
                   handleClick(e);
                 }}
               >
-                <Zoom>
-                  <img src={post.media} alt={post.content} width="500" />
-                </Zoom>
-                {/*<Image*/}
-                {/*  src={post.media}*/}
-                {/*  alt={post.content}*/}
-                {/*  fill*/}
-                {/*  priority*/}
-                {/*  className="!relative max-h-[400px] w-full object-cover lg:object-contain"*/}
-                {/*/>*/}
+                {post.mediaType === "IMAGE" ? (
+                  <Zoom>
+                    <img
+                      src={post.media}
+                      alt={post.content}
+                      className="h-full w-full object-cover"
+                    />
+                  </Zoom>
+                ) : (
+                  <VideoPlayer url={post.media} />
+                )}
               </motion.div>
             )}
           </div>

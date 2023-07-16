@@ -9,6 +9,8 @@ import TextareaAutosize from "react-textarea-autosize";
 import { HiPaperClip } from "react-icons/hi2";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { v4 as uuidv4 } from "uuid";
+import ReactPlayer from "react-player";
+import VideoPlayer from "~/components/shared/video-player";
 
 const CDNURL =
   "https://wxhaoxtosehvuuitysfj.supabase.co/storage/v1/object/public/multimedia/";
@@ -61,8 +63,14 @@ export default function ThreadsNew() {
       .then((url) => {
         if (!url) return;
 
+        const multimediaType = isImage(file as File) ? "IMAGE" : "VIDEO";
+
         setIsSubmitting(true);
-        createPost.mutate({ content, multimediaURL: url });
+        createPost.mutate({
+          content,
+          multimediaURL: url,
+          multimediaType: multimediaType,
+        });
       })
       .catch((error) => {
         return toast.error(error.message, { id: "image-upload-error" });
@@ -84,6 +92,22 @@ export default function ThreadsNew() {
     }
 
     return `${CDNURL}/${data?.path}`;
+  };
+
+  const isImage = (file: File) => {
+    const imageTypes = ["image/jpeg", "image/png", "image/gif", "image/bmp"];
+    return imageTypes.includes(file.type);
+  };
+
+  const isVideo = (file: File) => {
+    const videoTypes = [
+      "video/mp4",
+      "video/avi",
+      "video/mov",
+      "video/wmv",
+      "video/flv",
+    ];
+    return videoTypes.includes(file.type);
   };
 
   return (
@@ -138,11 +162,15 @@ export default function ThreadsNew() {
 
           {file && (
             <div className="mt-8 w-full cursor-pointer overflow-hidden rounded-xl lg:w-fit">
-              <img
-                className="h-full w-full object-cover"
-                src={filePreview ?? ""}
-                alt="Preview of image"
-              />
+              {isImage(file) ? (
+                <img
+                  className="h-full w-full object-cover"
+                  src={filePreview ?? ""}
+                  alt="Preview of image"
+                />
+              ) : isVideo(file) ? (
+                <VideoPlayer url={filePreview} />
+              ) : null}
             </div>
           )}
 
