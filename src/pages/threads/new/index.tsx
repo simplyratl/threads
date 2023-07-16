@@ -67,6 +67,7 @@ export default function ThreadsNew() {
                 value={content}
                 disabled={isSubmitting}
                 onChange={(event) => setContent(event.target.value)}
+                maxLength={500}
               />
 
               <span className="text-sm font-semibold text-foreground">

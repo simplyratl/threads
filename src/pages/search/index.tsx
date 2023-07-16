@@ -7,7 +7,7 @@ export default function SearchPage() {
       <h1 className="text-3xl font-bold">Search</h1>
 
       <div className="mt-8">
-        <HomeProfile showCurrentProfile={false} />
+        <HomeProfile showCurrentProfile={false} displayOnMobile />
       </div>
     </main>
   );

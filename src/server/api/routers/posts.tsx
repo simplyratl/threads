@@ -49,11 +49,45 @@ export const postRouter = createTRPCRouter({
 
       return thread;
     }),
+  getByID: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ input: { id }, ctx }) => {
+      const post = await ctx.prisma.post.findUnique({
+        where: {
+          id,
+        },
+        include: {
+          user: true,
+          likes: true,
+          _count: {
+            select: {
+              likes: true,
+            },
+          },
+        },
+      });
+
+      if (post === null) throw new Error("Post not found");
+
+      return {
+        post: {
+          ...post,
+          likedByCurrentUser: post.likes?.length === 1,
+        },
+      };
+    }),
   getAll: publicProcedure.query(async ({ ctx }) => {
+    const currentUserId = ctx.session?.user.id;
+
     const posts = await ctx.prisma.post.findMany({
-      include: {
+      select: {
+        id: true,
+        content: true,
+        createdAt: true,
+        userId: true,
         user: true,
-        likes: true,
+        likes:
+          currentUserId === null ? false : { where: { userId: currentUserId } },
         _count: {
           select: {
             likes: true,

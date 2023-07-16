@@ -2,6 +2,7 @@ import { type InferGetStaticPropsType, type NextPage } from "next";
 import { signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { MdVerified } from "react-icons/md";
 import Button from "~/components/shared/button";
@@ -68,7 +69,14 @@ const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                   {loggedUser?.id === user?.id ? (
                     <>
                       <Button variant="outline">Edit Profile</Button>
-                      <Button variant="outline" onClick={() => void signOut()}>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          void signOut().then(() => {
+                            window.location.pathname = "/";
+                          });
+                        }}
+                      >
                         <span className="block">Logout</span>
                       </Button>
                     </>

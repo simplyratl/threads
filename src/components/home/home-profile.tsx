@@ -5,9 +5,13 @@ import { api } from "~/utils/api";
 
 interface Props {
   showCurrentProfile?: boolean;
+  displayOnMobile?: boolean;
 }
 
-export default function HomeProfile({ showCurrentProfile = true }: Props) {
+export default function HomeProfile({
+  showCurrentProfile = true,
+  displayOnMobile = false,
+}: Props) {
   const { data: session } = useSession();
   const user = session?.user;
 
@@ -16,6 +20,7 @@ export default function HomeProfile({ showCurrentProfile = true }: Props) {
     {
       refetchOnWindowFocus: false,
       staleTime: Infinity,
+      enabled: !!user,
     }
   );
 
@@ -28,7 +33,11 @@ export default function HomeProfile({ showCurrentProfile = true }: Props) {
   );
 
   return (
-    <div className="hidden h-full w-[320px] flex-shrink-0 lg:block">
+    <div
+      className={`h-full w-[320px] flex-shrink-0 ${
+        displayOnMobile ? "block" : "hidden lg:block"
+      }`}
+    >
       <div>
         {showCurrentProfile && user && (
           <div className="mb-2">

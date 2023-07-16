@@ -44,7 +44,7 @@ function Navbar() {
     },
     {
       name: "Notifications",
-      href: "/notifications",
+      href: `/notifications`,
       icon: <HiOutlineHeart className="h-8 w-8 md:h-7 md:w-7" />,
       activeIcon: <HiHeart className="h-8 w-8 md:h-7 md:w-7" />,
       private: false,

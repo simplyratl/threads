@@ -52,7 +52,7 @@ export default function Home() {
             fetchNewPosts={postsData.fetchNextPage}
             hasMore={postsData.hasNextPage}
           />
-          <HomeProfile />
+          <HomeProfile displayOnMobile={false} />
         </div>
       </main>
     </>

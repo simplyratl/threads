@@ -20,3 +20,7 @@
 .inverted-logo {
   filter: var(--invert-color);
 }
+
+.disable-tap-highlight:active {
+  -webkit-tap-highlight-color: transparent;
+}

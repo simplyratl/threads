@@ -1,8 +1,9 @@
 import { Notification, User } from "@prisma/client";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import Head from "next/head";
 import Image from "next/image";
-import Link from "next/link";
+import { useEffect } from "react";
+import Loading from "~/components/shared/loading";
 import { api } from "~/utils/api";
 import { formatToNowDate } from "~/utils/formatToNowDate";
 
@@ -14,7 +15,7 @@ interface NotificationWithUser extends Notification {
 export default function Home() {
   const { data: session } = useSession();
 
-  const { data: notifications } =
+  const { data: notifications, isLoading } =
     api.notifications.getNotificationsByUser.useQuery(
       {
         userId: session?.user.id as string,
@@ -22,6 +23,7 @@ export default function Home() {
       {
         refetchOnWindowFocus: false,
         staleTime: 1000 * 20,
+        enabled: !!session?.user,
       }
     );
 
@@ -40,6 +42,12 @@ export default function Home() {
     }
   };
 
+  function displayLoading() {
+    if (isLoading && session?.user) {
+      return <Loading />;
+    }
+  }
+
   return (
     <>
       <Head>
@@ -49,6 +57,8 @@ export default function Home() {
       </Head>
       <main className="mx-auto min-h-screen max-w-2xl gap-16 px-4 md:ml-20 lg:ml-[34%] lg:p-0">
         <h1 className="text-3xl font-bold">Activity</h1>
+
+        {displayLoading()}
 
         {session?.user ? (
           <div className="mt-3">
@@ -79,17 +89,19 @@ export default function Home() {
                     </div>
                   </li>
                 ))
-              ) : (
+              ) : !isLoading ? (
                 <span className="text-lg text-foreground">
                   No new notifications
                 </span>
-              )}
+              ) : null}
             </ul>
           </div>
         ) : (
-          <span className="text-lg text-foreground">
-            You need to login to see notifications
-          </span>
+          session === null && (
+            <span className="text-lg text-foreground">
+              You need to login to see notifications
+            </span>
+          )
         )}
       </main>
     </>

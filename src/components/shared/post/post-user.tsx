@@ -12,6 +12,7 @@ interface PostUserProps {
   verified?: boolean;
   timestamp?: Date;
   small?: boolean;
+  className?: string;
 }
 
 function PostUser({
@@ -21,6 +22,7 @@ function PostUser({
   verified,
   timestamp,
   small = false,
+  className,
 }: PostUserProps) {
   const imageSize = small ? "h-8 w-8" : "h-10 w-10";
   const textSize = small ? "text-sm" : "text-base";
@@ -40,7 +42,11 @@ function PostUser({
   };
 
   return (
-    <Link href={`/profile/${id}`} className="flex items-start">
+    <Link
+      href={`/profile/${id}`}
+      rel="noopener noreferrer"
+      className={`flex items-start ${className ?? ""}`}
+    >
       <div className={`${imageSize} overflow-hidden rounded-full`}>
         <Image
           src={avatar}
