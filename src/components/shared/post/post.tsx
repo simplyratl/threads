@@ -7,6 +7,7 @@ import PostUser from "./post-user";
 import { Post as PostType, User } from "@prisma/client";
 import Link from "next/link";
 // import { Post, User } from "@prisma/client";
+import { motion } from "framer-motion";
 
 export interface PostWithUser extends PostType {
   user: User;
@@ -25,13 +26,12 @@ interface PostProps {
 
 function Post({ post, image }: PostProps) {
   const [imagePreview, setImagePreview] = React.useState<boolean | null>(null);
+  const imageRef = React.useRef<HTMLDivElement>(null);
 
   const handleClick = (event: React.MouseEvent) => {
     event.stopPropagation();
     event.preventDefault();
   };
-
-  console.log(post);
 
   return (
     <article>
@@ -62,17 +62,23 @@ function Post({ post, image }: PostProps) {
             </p>
 
             {post.media && (
-              <div
+              <motion.div
                 className="mt-2 w-full cursor-pointer overflow-hidden rounded-xl lg:w-fit"
-                onClick={() => setImagePreview(true)}
+                whileTap={{ scale: 0.98 }}
+                ref={imageRef}
+                onClick={(e) => {
+                  setImagePreview(true);
+                  handleClick(e);
+                }}
               >
                 <Image
                   src={post.media}
                   alt={post.content}
                   fill
+                  priority
                   className="!relative max-h-[400px] w-full object-cover lg:object-contain"
                 />
-              </div>
+              </motion.div>
             )}
           </div>
         </div>
@@ -89,9 +95,10 @@ function Post({ post, image }: PostProps) {
       </Link>
 
       <ImagePreview
-        image={image}
+        image={post.media as string}
         show={imagePreview}
         setShow={setImagePreview}
+        startPosition={imageRef.current?.getBoundingClientRect()}
       />
     </article>
   );
