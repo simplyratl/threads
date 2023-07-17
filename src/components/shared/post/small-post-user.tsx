@@ -12,6 +12,7 @@ interface PostUserProps {
   verified?: boolean;
   post?: PostWithUser;
   big?: boolean;
+  centeredText?: boolean;
 }
 
 const SmallPostUser = ({
@@ -21,6 +22,7 @@ const SmallPostUser = ({
   avatar,
   verified,
   big = false,
+  centeredText = false,
 }: PostUserProps) => {
   const imageSize = big ? "h-10 w-10" : "h-6 w-6";
   const textSize = big ? "text-base" : "text-sm";
@@ -46,7 +48,7 @@ const SmallPostUser = ({
         </div>
       </div>
 
-      <div className="w-full">
+      <div className={`w-full ${centeredText ? "flex items-center" : ""}`}>
         <div className={`flex flex-col ${textSize}`}>
           <Link
             href={`/profile/${id}`}

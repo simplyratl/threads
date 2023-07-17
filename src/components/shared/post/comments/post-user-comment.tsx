@@ -5,7 +5,8 @@ import { MdVerified } from "react-icons/md";
 import { formatToNowDate } from "~/utils/formatToNowDate";
 import { useState, useRef } from "react";
 import { User, Comment as CommentType } from "@prisma/client";
-import ControlBarComment from "./control-bar comments";
+import ControlBarComment from "../controls/control-bar-comments";
+import PostLine from "~/components/shared/post/post-line";
 
 interface Comment extends CommentType {
   user: User;
@@ -47,14 +48,9 @@ function PostUserComment({
     comment.parentId || (childrenComments && childrenComments?.length > 0);
 
   return (
-    <div className={`relative flex gap-2.5 pt-4`}>
+    <div className={`relative flex gap-2.5`}>
       <div className="relative-h-full">
         <div className="relative h-full">
-          {displayThreadLine && (
-            <div
-              className={`absolute left-1/2 top-11 h-[56%] w-0.5 -translate-x-1/2 bg-accent`}
-            ></div>
-          )}
           <Link
             href={`/profile/${user.id}`}
             rel="noopener noreferrer"
@@ -69,6 +65,7 @@ function PostUserComment({
               />
             </div>
           </Link>
+          {displayThreadLine && <PostLine fullHeight />}
         </div>
       </div>
 
@@ -79,7 +76,7 @@ function PostUserComment({
             rel="noopener noreferrer"
             className="flex items-center"
           >
-            <span className="font-semibold hover:opacity-70">
+            <span className="text-sm font-semibold hover:opacity-70">
               {comment.user.name}
             </span>
             {comment.user.verified && (
@@ -91,7 +88,9 @@ function PostUserComment({
               <>
                 <div className="ml-2 h-1 w-1 rounded-full bg-neutral-500 dark:bg-neutral-300"></div>
                 <div className="group relative ml-2">
-                  <span className={`relative hover:opacity-70`}>
+                  <span
+                    className={`relative text-sm font-semibold text-foreground hover:opacity-70`}
+                  >
                     {formatToNowDate(new Date(comment.createdAt))}
                   </span>
                 </div>
@@ -102,13 +101,11 @@ function PostUserComment({
           <p>{comment.content}</p>
 
           {!disableControlBar && (
-            <div className="mt-2">
-              <ControlBarComment
-                comment={comment}
-                likes={0}
-                likedByCurrentUser={false}
-              />
-            </div>
+            <ControlBarComment
+              comment={comment}
+              likes={0}
+              likedByCurrentUser={false}
+            />
           )}
         </div>
       </div>

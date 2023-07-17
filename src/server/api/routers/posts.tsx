@@ -75,6 +75,20 @@ export const postRouter = createTRPCRouter({
               comments: true,
             },
           },
+          comments: {
+            take: 3,
+            orderBy: {
+              createdAt: "desc",
+            },
+            select: {
+              user: {
+                select: {
+                  image: true,
+                },
+              },
+            },
+            distinct: ["userId"],
+          },
         },
       });
 
@@ -215,6 +229,20 @@ async function getInfinitePosts({
       user: true,
       likes:
         currentUserId === null ? false : { where: { userId: currentUserId } },
+      comments: {
+        take: 3,
+        orderBy: {
+          createdAt: "desc",
+        },
+        select: {
+          user: {
+            select: {
+              image: true,
+            },
+          },
+        },
+        distinct: ["userId"],
+      },
       _count: true,
     },
   });

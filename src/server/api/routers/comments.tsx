@@ -83,7 +83,7 @@ export const commentsRouter = createTRPCRouter({
   getCommentsByPost: publicProcedure
     .input(
       z.object({
-        postId: z.string(),
+        postId: z.string().nullable(),
         limit: z.number().optional(),
         cursor: z.object({ id: z.string(), createdAt: z.date() }).optional(),
       })
@@ -93,6 +93,24 @@ export const commentsRouter = createTRPCRouter({
 
       return await getInfiniteComments({
         whereClause: { postId, parentId: null },
+        ctx,
+        limit,
+        cursor,
+      });
+    }),
+  getCommentsByUser: publicProcedure
+    .input(
+      z.object({
+        userId: z.string().nullable(),
+        limit: z.number().optional(),
+        cursor: z.object({ id: z.string(), createdAt: z.date() }).optional(),
+      })
+    )
+    .query(async ({ input: { limit = 14, cursor, userId }, ctx }) => {
+      if (userId === null) return { comments: [], nextCursor: undefined };
+
+      return await getInfiniteComments({
+        whereClause: { userId },
         ctx,
         limit,
         cursor,

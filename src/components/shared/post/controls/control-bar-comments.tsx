@@ -12,11 +12,13 @@ import {
 import TextareaAutosize from "react-textarea-autosize";
 import Modal from "~/components/modals/modal";
 import { api } from "~/utils/api";
-import Button from "../button";
-import PostUserComment from "./post-user-comment";
-import { CommentWithChildren } from "~/components/shared/post/comments";
+import Button from "../../button";
+import PostUserComment from "../comments/post-user-comment";
+import { CommentWithChildren } from "~/components/shared/post/comments/comments";
 import AddCommentModal from "~/components/shared/modals/add-comment-modal";
 import addCommentModal from "~/components/shared/modals/add-comment-modal";
+import ControlCount from "~/components/shared/post/controls/control-count";
+import ControlButtons from "~/components/shared/post/controls/control-buttons";
 
 type ControlBarCommentProps = {
   comment: CommentWithChildren;
@@ -70,17 +72,6 @@ function ControlBarComment({
             };
           }),
         };
-
-        // return oldData.map((comm) => {
-        //   if (comm.id === comment.parentId) {
-        //     return {
-        //       ...comm,
-        //       childComments: [...(comm.childComments ?? []), comment],
-        //     };
-        //   }
-        //
-        //   return comm;
-        // });
       };
 
       trpcUtils.comments.getCommentsByPost.setInfiniteData(
@@ -131,45 +122,15 @@ function ControlBarComment({
   return (
     <>
       <div>
-        <div className="flex items-center gap-2">
-          <div className="cursor-pointer hover:opacity-60">
-            <div
-              className="cursor-pointer hover:opacity-60"
-              onClick={() => !toggleLike.isLoading && handleLike()}
-            >
-              {!likedByCurrentUserState ? (
-                <motion.div
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                >
-                  <AiOutlineHeart className="h-7 w-7" />
-                </motion.div>
-              ) : (
-                <motion.div
-                  initial={{ scale: 0.5 }}
-                  animate={{ scale: 1 }}
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                >
-                  <AiFillHeart className="h-7 w-7 text-red-500" />
-                </motion.div>
-              )}
-            </div>
-          </div>
-          {!comment.parentId && (
-            <div
-              className="cursor-pointer hover:opacity-60"
-              onClick={() => setShowAddCommentModal(true)}
-            >
-              <AiOutlineMessage className="h-6 w-6" />
-            </div>
-          )}
-          <div className="cursor-pointer hover:opacity-60">
-            <AiOutlineSend className="h-6 w-6" />
-          </div>
-        </div>
+        <ControlButtons
+          toggleLike={toggleLike}
+          setShowAddCommentModal={setShowAddCommentModal}
+          comment={comment}
+          handleLike={handleLike}
+          likedByCurrentUserState={likedByCurrentUser}
+        />
         <div className="mt-2">
-          <span className="font-semibold text-foreground">{likes} likes</span>
+          <ControlCount likes={likes} />
         </div>
       </div>
 
@@ -182,48 +143,6 @@ function ControlBarComment({
         setShowModal={setShowAddCommentModal}
         showModal={showAddCommentModal}
       />
-
-      {/*<Modal*/}
-      {/*  show={showAddCommentModal}*/}
-      {/*  setShow={setShowAddCommentModal}*/}
-      {/*  title="Add comment"*/}
-      {/*>*/}
-      {/*  <div>*/}
-      {/*    <PostUserComment*/}
-      {/*      comment={comment}*/}
-      {/*      user={comment.user}*/}
-      {/*      disableControlBar*/}
-      {/*    />*/}
-
-      {/*    <div className="mt-2 text-xs">*/}
-      {/*      <p className="font-semibold text-foreground">*/}
-      {/*        replying to <span className="">{comment.user.name}</span>*/}
-      {/*      </p>*/}
-      {/*    </div>*/}
-
-      {/*    <div className="mt-2 h-full">*/}
-      {/*      <TextareaAutosize*/}
-      {/*        className="w-full resize-none rounded border border-foreground bg-transparent px-4 py-3 outline-none focus:ring-2 focus:ring-foreground"*/}
-      {/*        placeholder="Add a comment..."*/}
-      {/*        value={content}*/}
-      {/*        maxRows={20}*/}
-      {/*        disabled={addChildComment.isLoading}*/}
-      {/*        onChange={(event) => setContent(event.target.value)}*/}
-      {/*        maxLength={500}*/}
-      {/*      />*/}
-
-      {/*      <span className="text-sm font-semibold text-foreground">*/}
-      {/*        {content.length}/500*/}
-      {/*      </span>*/}
-
-      {/*      <div className="flex justify-end">*/}
-      {/*        <Button variant="minimal" onClick={() => handleCommentAdd()}>*/}
-      {/*          Comment*/}
-      {/*        </Button>*/}
-      {/*      </div>*/}
-      {/*    </div>*/}
-      {/*  </div>*/}
-      {/*</Modal>*/}
     </>
   );
 }

@@ -1,7 +1,7 @@
 import React from "react";
 // import PostUser from "@/components/ui/post-user";
 import Image from "next/image";
-import ControlBar from "./control-bar";
+import ControlBar from "./controls/control-bar";
 import ImagePreview from "../image-preview";
 import PostUser from "./post-user";
 import { Post as PostType, User } from "@prisma/client";
@@ -20,14 +20,20 @@ export interface PostWithUser extends PostType {
     comments: number;
     followers?: number;
   };
+  comments: {
+    user: {
+      image: string;
+    };
+  }[];
   likedByCurrentUser: boolean;
 }
 
 interface PostProps {
   post: PostWithUser;
+  disableControlBar?: boolean;
 }
 
-function Post({ post }: PostProps) {
+function Post({ post, disableControlBar }: PostProps) {
   const handleClick = (event: React.MouseEvent) => {
     event.stopPropagation();
     event.preventDefault();
@@ -57,16 +63,18 @@ function Post({ post }: PostProps) {
           </div>
         </div>
 
-        <div className="w-fi3 mt-2" onClick={handleClick}>
-          <ControlBar
-            post={post}
-            postId={post.id}
-            likes={post._count.likes}
-            comments={post._count.comments}
-            likedByCurrentUser={post.likedByCurrentUser}
-            userId={post.user.id}
-          />
-        </div>
+        {!disableControlBar && (
+          <div className="w-fi3 mt-2" onClick={handleClick}>
+            <ControlBar
+              post={post}
+              postId={post.id}
+              likes={post._count.likes}
+              comments={post._count.comments}
+              likedByCurrentUser={post.likedByCurrentUser}
+              userId={post.user.id}
+            />
+          </div>
+        )}
       </Link>
     </article>
   );

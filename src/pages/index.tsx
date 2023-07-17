@@ -25,6 +25,8 @@ export default function Home() {
 
   const posts: any = postsData.data?.pages.flatMap((page) => page.posts);
 
+  console.log(posts);
+
   return (
     <>
       <Head>

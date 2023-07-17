@@ -3,7 +3,10 @@ import {
   createTRPCRouter,
   publicProcedure,
   protectedProcedure,
+  createTRPCContext,
 } from "~/server/api/trpc";
+import { Prisma } from "@prisma/client";
+import { inferAsyncReturnType } from "@trpc/server";
 
 export const userRouter = createTRPCRouter({
   getIfVerified: publicProcedure
@@ -27,26 +30,10 @@ export const userRouter = createTRPCRouter({
         where: {
           id,
         },
-        select: {
-          id: true,
-          name: true,
-          image: true,
-          verified: true,
-          posts: {
-            select: {
-              id: true,
-              content: true,
-              createdAt: true,
-              userId: true,
-              user: true,
-            },
-          },
-          _count: {
-            select: {
-              followers: true,
-              following: true,
-            },
-          },
+        include: {
+          _count: true,
+          followers: true,
+          following: true,
         },
       });
 
@@ -139,4 +126,90 @@ export const userRouter = createTRPCRouter({
 
       return users;
     }),
+  getFollowers: publicProcedure
+    .input(z.object({ userId: z.string() }))
+    .query(async ({ input: { userId }, ctx }) => {
+      const followers = await ctx.prisma.user.findMany({
+        where: {
+          followers: {
+            some: {
+              id: userId,
+            },
+          },
+        },
+      });
+
+      return followers;
+    }),
+  getFollowing: publicProcedure
+    .input(z.object({ userId: z.string() }))
+    .query(async ({ input: { userId }, ctx }) => {
+      const following = await ctx.prisma.user.findMany({
+        where: {
+          following: {
+            some: {
+              id: userId,
+            },
+          },
+        },
+      });
+
+      return following;
+    }),
+  getPostUserLikes: publicProcedure
+    .input(z.object({ postId: z.string().nullable() }))
+    .query(async ({ input: { postId }, ctx }) => {
+      if (!postId) return undefined;
+
+      const users = await ctx.prisma.post.findUnique({
+        where: {
+          id: postId,
+        },
+        select: {
+          likes: {
+            select: {
+              user: true,
+            },
+          },
+        },
+      });
+
+      return users;
+    }),
 });
+
+// //DYNAMIC INIFINITE USERS WHERE CLAUSE
+// async function getInfiniteUsers({
+//                                             whereClause,
+//                                             ctx,
+//                                             limit,
+//                                             cursor,
+//                                         }: {
+//     whereClause: Prisma.UserWhereInput;
+//     ctx: inferAsyncReturnType<typeof createTRPCContext>;
+//     limit: number;
+//     cursor: { email: string } | undefined;
+// }) {
+//     const users = await ctx.prisma.user.findMany({
+//         take: limit + 1,
+//         cursor: cursor ? { email: cursor } : undefined,
+//         where: whereClause,
+//         include: {
+//             user: true,
+//             sender: true,
+//         },
+//     });
+//
+//     let nextCursor: typeof cursor | undefined;
+//     if (users.length > limit) {
+//         const nextItem = users.pop();
+//         if (nextItem != null) {
+//             nextCursor = { id: nextItem.id, createdAt: nextItem.createdAt };
+//         }
+//     }
+//
+//     return {
+//         users,
+//         nextCursor,
+//     };
+// }

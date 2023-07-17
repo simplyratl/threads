@@ -39,6 +39,7 @@ export default function HomeProfile({
               avatar={user.image as string}
               verified={user?.verified ?? false}
               big
+              centeredText
             />
           </div>
         )}
@@ -53,6 +54,7 @@ export default function HomeProfile({
                     avatar={recommendedUser.image as string}
                     username={recommendedUser.name as string}
                     verified={recommendedUser.verified}
+                    centeredText
                   />
                 </li>
               ))}

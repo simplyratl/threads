@@ -1,7 +1,7 @@
 import { Post } from "@prisma/client";
 import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
-import { useState, useLayoutEffect } from "react";
+import { useState, useLayoutEffect, useEffect } from "react";
 import { toast } from "react-hot-toast";
 import {
   AiFillHeart,
@@ -12,6 +12,8 @@ import {
 import { api } from "~/utils/api";
 import AddCommentModal from "~/components/shared/modals/add-comment-modal";
 import post, { PostWithUser } from "~/components/shared/post/post";
+import ControlCount from "~/components/shared/post/controls/control-count";
+import ControlButtons from "~/components/shared/post/controls/control-buttons";
 
 type ControlBarProps = {
   post: PostWithUser;
@@ -46,7 +48,7 @@ function ControlBar({
     },
   });
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (likedByCurrentUserState === likedByCurrentUser) return;
     if (!session?.user) return;
     setLikedByCurrentUserState(likedByCurrentUser);
@@ -114,6 +116,7 @@ function ControlBar({
     trpcUtils.posts.infinitePosts.setInfiniteData({}, updateData);
     trpcUtils.posts.infiniteProfileFeed.setInfiniteData({ userId }, updateData);
     trpcUtils.posts.getByID.setData({ id: postId }, updateSinglePost);
+    void trpcUtils.users.getPostUserLikes.invalidate({ postId });
 
     Promise.resolve(toggleLike.mutate({ postId })).catch(() => {
       setLikedByCurrentUserState(false);
@@ -128,8 +131,6 @@ function ControlBar({
 
       const updateData = (oldData: any) => {
         if (!oldData) return;
-
-        console.log(oldData);
 
         return {
           ...oldData,
@@ -165,45 +166,16 @@ function ControlBar({
 
   return (
     <div>
-      <div className="flex items-center gap-2">
-        <div className="cursor-pointer hover:opacity-60">
-          <div
-            className="cursor-pointer hover:opacity-60"
-            onClick={() => !toggleLike.isLoading && handleLike()}
-          >
-            {!likedByCurrentUserState ? (
-              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                <AiOutlineHeart className="h-6 w-6" />
-              </motion.div>
-            ) : (
-              <motion.div
-                initial={{ scale: 0.5 }}
-                animate={{ scale: 1 }}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-              >
-                <AiFillHeart className="h-6 w-6 text-red-500" />
-              </motion.div>
-            )}
-          </div>
-        </div>
-        <div
-          className="cursor-pointer hover:opacity-60"
-          onClick={() => setShowAddCommentModal(true)}
-        >
-          <AiOutlineMessage className="h-6 w-6" />
-        </div>
-        <div className="cursor-pointer hover:opacity-60">
-          <AiOutlineSend className="h-6 w-6" />
-        </div>
-      </div>
-      <div className="mt-2 flex items-center gap-2 text-sm">
-        <span className="font-semibold text-foreground">
-          {likes ?? 0} likes
-        </span>
-        <span className="text-sm font-semibold text-foreground">
-          {comments ?? 0} comments
-        </span>
+      <ControlButtons
+        toggleLike={toggleLike}
+        setShowAddCommentModal={setShowAddCommentModal}
+        handleLike={handleLike}
+        post={post}
+        likedByCurrentUserState={likedByCurrentUser}
+      />
+
+      <div>
+        <ControlCount likes={likes} comments={comments} post={post} />
       </div>
 
       <AddCommentModal

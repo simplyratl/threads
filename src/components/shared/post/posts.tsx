@@ -1,22 +1,12 @@
 import Image from "next/image";
 import { api } from "~/utils/api";
-import Post from "./post";
+import Post, { PostWithUser } from "./post";
 import Loading from "../loading";
 import { User, type Post as PostType } from "@prisma/client";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { mockSession } from "next-auth/client/__tests__/helpers/mocks";
 import user = mockSession.user;
 import PostUser from "~/components/shared/post/post-user";
-
-interface PostWithUser extends PostType {
-  user: User;
-  _count: {
-    likes: number;
-    comments: number;
-    followers: number;
-  };
-  likedByCurrentUser: boolean;
-}
 
 interface PostsProps {
   posts: PostWithUser[] | undefined;
@@ -35,13 +25,13 @@ function Posts({ posts, isLoading, hasMore, fetchNewPosts }: PostsProps) {
   }
 
   return (
-    <section className="flex-1 flex-shrink-0 overflow-hidden">
+    <section className="-m-4 flex-1 flex-shrink-0 overflow-hidden">
       <InfiniteScroll
         dataLength={posts?.length ?? 0}
         next={fetchNewPosts}
         hasMore={hasMore as boolean}
         loader={<Loading />}
-        className="grid gap-4 !overflow-hidden"
+        className="grid !overflow-hidden sm:gap-4"
         endMessage={
           <span className="mb-4 mt-2 text-center">No more posts</span>
         }

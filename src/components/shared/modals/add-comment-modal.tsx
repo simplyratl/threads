@@ -1,5 +1,5 @@
 import React from "react";
-import PostUserComment from "~/components/shared/post/post-user-comment";
+import PostUserComment from "~/components/shared/post/comments/post-user-comment";
 import TextareaAutosize from "react-textarea-autosize";
 import Button from "~/components/shared/button";
 import Modal from "~/components/modals/modal";
@@ -56,16 +56,7 @@ const AddCommentModal = ({
         />
       );
     } else {
-      if (post)
-        return (
-          <SmallPostUser
-            id={post.user.id}
-            avatar={post.user.image as string}
-            verified={post.user.verified}
-            big
-            username={post.user.name as string}
-          />
-        );
+      if (post) return <PostUser post={post} disableControlBar />;
     }
   };
 
@@ -73,12 +64,6 @@ const AddCommentModal = ({
     <Modal show={showModal} setShow={setShowModal} title="Add comment">
       <div>
         {displayThread()}
-
-        {post && post.media && (
-          <div className="pl-11">
-            <DisplayMedia post={post} disableZoom />
-          </div>
-        )}
 
         <div className="mt-4 text-xs">
           <p className="font-semibold text-foreground">

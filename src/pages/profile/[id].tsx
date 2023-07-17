@@ -3,7 +3,7 @@ import { signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { MdVerified } from "react-icons/md";
 import Button from "~/components/shared/button";
@@ -11,6 +11,9 @@ import Posts from "~/components/shared/post/posts";
 import { api } from "~/utils/api";
 import { ssgHelper } from "~/utils/ssg";
 import { PostWithUser } from "~/components/shared/post/post";
+import ListUsersModal from "~/components/shared/modals/list-users-modal";
+import Comments from "~/components/shared/post/comments/comments";
+import { User } from "@prisma/client";
 
 const tabs = ["Threads", "Replies"];
 
@@ -18,6 +21,12 @@ const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   id,
 }) => {
   const [activeTab, setActiveTab] = useState(tabs[0]);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedModal, setSelectedModal] = useState("");
+
+  useEffect(() => {
+    if (!showModal) setSelectedModal("");
+  }, [showModal]);
 
   const { data: user, isLoading } = api.users.getByID.useQuery(
     { id },
@@ -26,6 +35,7 @@ const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
       refetchOnWindowFocus: false,
     }
   );
+
   const { data: session } = useSession();
   const loggedUser = session?.user;
 
@@ -65,7 +75,19 @@ const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
     }
   );
 
+  const commentsData = api.comments.getCommentsByUser.useInfiniteQuery(
+    { userId: user?.id ?? null },
+    {
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+      refetchOnWindowFocus: false,
+      enabled: !postsData.isLoading,
+    }
+  );
+
   const posts: any = postsData.data?.pages.flatMap((page) => page.posts);
+  const comments: any = commentsData.data?.pages.flatMap(
+    (page) => page.comments
+  );
 
   const handleActiveTab = (tab: string) => {
     setActiveTab(tab);
@@ -129,10 +151,22 @@ const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                 </div>
 
                 <div className="mt-4 flex items-center gap-4">
-                  <span className="font-semibold">
+                  <span
+                    className="block cursor-pointer font-semibold hover:opacity-60"
+                    onClick={() => {
+                      setShowModal(true);
+                      setSelectedModal("followers");
+                    }}
+                  >
                     Followers {user?._count?.followers}
                   </span>
-                  <span className="font-semibold">
+                  <span
+                    className="block cursor-pointer font-semibold hover:opacity-60"
+                    onClick={() => {
+                      setShowModal(true);
+                      setSelectedModal("following");
+                    }}
+                  >
                     Following {user?._count?.following}
                   </span>
                 </div>
@@ -148,11 +182,13 @@ const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
             </div>
           </div>
 
-          <div className="flex pt-4">
+          <div className="mt-3 flex">
             {tabs.map((tab, index) => (
               <button
-                className={`flex-1 border-b ${
-                  activeTab === tab ? "border-foreground" : "border-accent"
+                className={`flex-1 rounded-t border-b py-2 ${
+                  activeTab === tab
+                    ? "border-foreground"
+                    : "border-accent hover:bg-accent"
                 }`}
                 onClick={() => handleActiveTab(tab)}
                 key={index}
@@ -164,14 +200,27 @@ const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
         </div>
 
         <div className="mt-10">
-          <Posts
-            posts={posts}
-            isLoading={postsData.isLoading}
-            fetchNewPosts={postsData.fetchNextPage}
-            hasMore={postsData.hasNextPage}
-          />
+          {activeTab === "Threads" ? (
+            <Posts
+              posts={posts}
+              isLoading={postsData.isLoading}
+              fetchNewPosts={postsData.fetchNextPage}
+              hasMore={postsData.hasNextPage}
+            />
+          ) : (
+            <Comments comments={comments} commentData={commentsData} />
+          )}
         </div>
       </main>
+
+      <ListUsersModal
+        showModal={showModal}
+        setShowModal={setShowModal}
+        title={selectedModal === "followers" ? "Followers" : "Following"}
+        users={
+          selectedModal === "followers" ? user?.followers : user?.following
+        }
+      />
     </>
   );
 };

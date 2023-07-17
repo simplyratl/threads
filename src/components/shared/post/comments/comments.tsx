@@ -1,18 +1,19 @@
 import { Comment, Post, User } from "@prisma/client";
 import React, { useState } from "react";
 import { toast } from "react-hot-toast";
-import TextareaAutosize from "react-textarea-autosize";
 import { api } from "~/utils/api";
-import Button from "../button";
+import Button from "../../button";
 import PostUserComment from "./post-user-comment";
 import Loading from "~/components/shared/loading";
 import InfiniteScroll from "react-infinite-scroll-component";
 
 interface CommentsProps {
-  postId: string;
-  post: Post & {
+  postId?: string;
+  post?: Post & {
     user: User;
   };
+  comments?: CommentWithChildren[];
+  commentData?: any;
 }
 
 export interface CommentWithChildren extends Comment {
@@ -20,23 +21,18 @@ export interface CommentWithChildren extends Comment {
   user: User;
 }
 
-export default function Comments({ postId, post }: CommentsProps) {
+export default function Comments({
+  postId,
+  post,
+  comments,
+  commentData,
+}: CommentsProps) {
   const [content, setContent] = useState<string>("");
   const [showComments, setShowComments] = useState<
     {
       commentId: string;
     }[]
   >([]);
-
-  const commentData = api.comments.getCommentsByPost.useInfiniteQuery(
-    { postId },
-    {
-      getNextPageParam: (lastPage) => lastPage.nextCursor,
-      refetchOnWindowFocus: false,
-    }
-  );
-
-  const comments = commentData.data?.pages.flatMap((page) => page.comments);
 
   const trpcUtils = api.useContext();
 
@@ -57,14 +53,19 @@ export default function Comments({ postId, post }: CommentsProps) {
         };
       };
 
-      trpcUtils.comments.getCommentsByPost.setInfiniteData(
-        { postId },
-        updateData
-      );
+      if (postId) {
+        trpcUtils.comments.getCommentsByPost.setInfiniteData(
+          { postId },
+          updateData
+        );
+      }
     },
   });
 
   const handleAddComment = () => {
+    if (!content) return toast.error("Comment cannot be empty");
+    if (!postId || !post) return toast.error("Error getting post data");
+
     addComment.mutate({
       content,
       postId,
@@ -119,7 +120,7 @@ export default function Comments({ postId, post }: CommentsProps) {
 
   return (
     <div>
-      <div className="mt-8">
+      <div className="mt-2">
         <ul className="grid">
           <InfiniteScroll
             dataLength={comments?.length ?? 0}
@@ -128,7 +129,7 @@ export default function Comments({ postId, post }: CommentsProps) {
             loader={<Loading />}
             className="grid gap-4 !overflow-hidden"
             endMessage={
-              <span className="mb-4 mt-2 text-center">No more comments</span>
+              <span className="mb-4 mt-2 text-center">No more replies</span>
             }
           >
             {!commentData.isLoading &&

@@ -12,6 +12,48 @@ interface ModalProps {
 }
 
 const Modal = ({ setShow, show, children, title }: ModalProps) => {
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const isDesktop = mounted && window.innerWidth > 768;
+
+  const animationVariantContent = isDesktop
+    ? {
+        initial: { opacity: 0, scale: 0.84, y: 100 },
+        animate: { opacity: 1, scale: 1, y: 0 },
+        exit: { opacity: 0, scale: 0.84, y: 100 },
+        transition: {
+          ease: "easeInOut",
+          duration: 0.3,
+          type: "spring",
+        },
+      }
+    : {
+        initial: { opacity: 0, y: "100%" },
+        animate: { opacity: 1, y: 0 },
+        exit: { opacity: 0, y: "100%" },
+        transition: {
+          ease: "easeInOut",
+          duration: 0.2,
+          type: "tween",
+        },
+      };
+
+  const animationVariantOverlay = isDesktop
+    ? {
+        initial: { opacity: 0 },
+        animate: { opacity: 1 },
+        exit: { opacity: 0 },
+      }
+    : {
+        initial: { opacity: 0 },
+        animate: { opacity: 1 },
+        exit: { opacity: 0 },
+      };
+
   const contentRef = useRef<HTMLDivElement>(null);
   const elRef = useRef<HTMLDivElement | null>(null);
 
@@ -69,17 +111,20 @@ const Modal = ({ setShow, show, children, title }: ModalProps) => {
     <AnimatePresence>
       {show && (
         <motion.section
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          variants={animationVariantOverlay}
+          initial={animationVariantOverlay.initial}
+          animate={animationVariantOverlay.animate}
+          exit={animationVariantOverlay.exit}
           className="fixed inset-0 z-50 flex justify-center bg-background_overlay"
         >
           <motion.div
-            initial={{ opacity: 0, scale: 0.84 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.84 }}
+            variants={animationVariantContent}
+            initial={animationVariantContent.initial}
+            animate={animationVariantContent.animate}
+            exit={animationVariantContent.exit}
+            transition={animationVariantContent.transition}
             ref={contentRef}
-            className="mx-4 mt-20 h-fit max-h-[80%] w-full overflow-auto rounded-2xl bg-accent p-4 sm:mx-0 sm:w-[600px]"
+            className="h-[91.1vh] w-full overflow-auto bg-accent p-4 sm:mx-0 sm:mt-20 sm:h-fit sm:max-h-[80%] sm:w-[600px] sm:rounded-2xl"
           >
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-semibold">{title}</h2>
