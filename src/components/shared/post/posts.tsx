@@ -4,6 +4,9 @@ import Post from "./post";
 import Loading from "../loading";
 import { User, type Post as PostType } from "@prisma/client";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { mockSession } from "next-auth/client/__tests__/helpers/mocks";
+import user = mockSession.user;
+import PostUser from "~/components/shared/post/post-user";
 
 interface PostWithUser extends PostType {
   user: User;
@@ -45,7 +48,7 @@ function Posts({ posts, isLoading, hasMore, fetchNewPosts }: PostsProps) {
       >
         {posts.map((post, index) => (
           <div key={index}>
-            <Post post={post} image={undefined} />
+            <PostUser post={post} />
           </div>
         ))}
       </InfiniteScroll>

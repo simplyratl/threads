@@ -47,7 +47,7 @@ function PostUserComment({
     comment.parentId || (childrenComments && childrenComments?.length > 0);
 
   return (
-    <div className="relative flex gap-2.5">
+    <div className={`relative flex gap-2.5 pt-4`}>
       <div className="relative-h-full">
         <div className="relative h-full">
           {displayThreadLine && (
@@ -111,13 +111,6 @@ function PostUserComment({
             </div>
           )}
         </div>
-
-        {/* <form onSubmit={handleChildComment}>
-                    <input type="text" name="content_child_comment" />
-                    <Button type="submit">Comment</Button>
-
-                    <input type="hidden" value={comment.id} name="parent_id" />
-                  </form> */}
       </div>
     </div>
   );

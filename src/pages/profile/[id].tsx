@@ -10,7 +10,7 @@ import Button from "~/components/shared/button";
 import Posts from "~/components/shared/post/posts";
 import { api } from "~/utils/api";
 import { ssgHelper } from "~/utils/ssg";
-import {PostWithUser} from "~/components/shared/post/post";
+import { PostWithUser } from "~/components/shared/post/post";
 
 const tabs = ["Threads", "Replies"];
 
@@ -82,7 +82,8 @@ const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
       <Head>
         <title>Threads | {user?.name}</title>
       </Head>
-      <main className="mx-auto min-h-screen max-w-2xl gap-16 px-4 md:ml-[14%] lg:ml-[38%] lg:p-0">
+      <main className="mx-auto min-h-screen max-w-lg gap-16 px-4 md:ml-[14%] lg:ml-[34%] lg:max-w-2xl lg:p-0">
+        {/*<main className="mx-auto min-h-screen max-w-lg px-4 md:ml-auto lg:ml-[34%] lg:max-w-4xl lg:p-0">*/}
         <div className="w-full">
           <div className="flex w-full justify-between">
             <div>

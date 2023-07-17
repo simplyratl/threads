@@ -43,6 +43,7 @@ export const authOptions: NextAuthOptions = {
       user: {
         ...session.user,
         id: user.id,
+        verified: session.user?.verified ?? false,
       },
     }),
   },

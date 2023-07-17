@@ -3,7 +3,7 @@ import { useSession } from "next-auth/react";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect } from "react";
+import InfiniteScroll from "react-infinite-scroll-component";
 import Loading from "~/components/shared/loading";
 import { api } from "~/utils/api";
 import { formatToNowDate } from "~/utils/formatToNowDate";
@@ -13,20 +13,30 @@ interface NotificationWithUser extends Notification {
   sender: User;
 }
 
-export default function Home() {
+export default function NotificationsPage() {
   const { data: session } = useSession();
 
-  const { data: notifications, isLoading } =
-    api.notifications.getNotificationsByUser.useQuery(
+  const notificationsData =
+    api.notifications.getNotificationsByUser.useInfiniteQuery(
+      { userId: session?.user?.id as string },
       {
-        userId: session?.user.id as string,
-      },
-      {
+        getNextPageParam: (lastPage) => lastPage.nextCursor,
         refetchOnWindowFocus: false,
-        staleTime: 1000 * 20,
         enabled: !!session?.user,
       }
     );
+
+  const notifications = notificationsData.data?.pages.flatMap(
+    (page) => page.notifications
+  );
+
+  if (!notifications || (notificationsData.isLoading && session?.user)) {
+    return (
+      <main className="mx-auto min-h-screen max-w-2xl gap-16 px-4 md:ml-20 lg:ml-[34%] lg:p-0">
+        <Loading />
+      </main>
+    );
+  }
 
   const formatNotificationType = (type: string) => {
     switch (type) {
@@ -44,12 +54,6 @@ export default function Home() {
         return "did something";
     }
   };
-
-  function displayLoading() {
-    if (isLoading && session?.user) {
-      return <Loading />;
-    }
-  }
 
   function urlToNotification(notification: NotificationWithUser) {
     const { type } = notification;
@@ -76,47 +80,60 @@ export default function Home() {
       <main className="mx-auto min-h-screen max-w-2xl gap-16 px-4 md:ml-20 lg:ml-[34%] lg:p-0">
         <h1 className="text-3xl font-bold">Activity</h1>
 
-        {displayLoading()}
-
         {session?.user ? (
           <div className="mt-3">
             <ul>
-              {notifications && notifications.length > 0 ? (
-                notifications.map((notification: NotificationWithUser) => (
-                  <Link
-                    href={urlToNotification(notification)}
-                    key={notification.id}
-                  >
-                    <li className="flex w-full gap-3 rounded-lg px-4 pt-2 hover:bg-accent">
-                      <div className="h-11 w-11 flex-shrink-0 overflow-hidden rounded-full">
-                        <Image
-                          src={notification.sender.image as string}
-                          alt={notification.sender.name as string}
-                          fill
-                          className="!relative h-full w-full object-cover"
-                        />
-                      </div>
-                      <div className="w-full border-b border-accent pb-3">
-                        <div className="flex items-center gap-2">
-                          <h4 className="text-base font-semibold">
-                            {notification.sender.name}
-                          </h4>
-                          <span className="text-sm text-foreground">
-                            {formatToNowDate(new Date(notification.createdAt))}
-                          </span>
+              <InfiniteScroll
+                dataLength={notifications?.length ?? 0}
+                next={notificationsData.fetchNextPage}
+                hasMore={notificationsData.hasNextPage as boolean}
+                loader={<Loading />}
+                className="grid gap-4 !overflow-hidden"
+                endMessage={
+                  <span className="mb-4 mt-2 text-center">
+                    No more notifications
+                  </span>
+                }
+              >
+                {notifications && notifications.length > 0 ? (
+                  notifications.map((notification: NotificationWithUser) => (
+                    <Link
+                      href={urlToNotification(notification)}
+                      key={notification.id}
+                    >
+                      <li className="flex w-full gap-3 rounded-lg px-4 pt-2 hover:bg-accent">
+                        <div className="h-11 w-11 flex-shrink-0 overflow-hidden rounded-full">
+                          <Image
+                            src={notification.sender.image as string}
+                            alt={notification.sender.name as string}
+                            fill
+                            className="!relative h-full w-full object-cover"
+                          />
                         </div>
-                        <p className="m-0 text-base text-foreground">
-                          {formatNotificationType(notification.type)}
-                        </p>
-                      </div>
-                    </li>
-                  </Link>
-                ))
-              ) : !isLoading ? (
-                <span className="text-lg text-foreground">
-                  No new notifications
-                </span>
-              ) : null}
+                        <div className="w-full border-b border-accent pb-3">
+                          <div className="flex items-center gap-2">
+                            <h4 className="text-base font-semibold">
+                              {notification.sender.name}
+                            </h4>
+                            <span className="text-sm text-foreground">
+                              {formatToNowDate(
+                                new Date(notification.createdAt)
+                              )}
+                            </span>
+                          </div>
+                          <p className="m-0 text-base text-foreground">
+                            {formatNotificationType(notification.type)}
+                          </p>
+                        </div>
+                      </li>
+                    </Link>
+                  ))
+                ) : !notificationsData.isLoading ? (
+                  <span className="text-lg text-foreground">
+                    No new notifications
+                  </span>
+                ) : null}
+              </InfiniteScroll>
             </ul>
           </div>
         ) : (

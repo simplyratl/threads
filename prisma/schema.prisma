@@ -121,6 +121,8 @@ model Notification {
   sender User  @relation("Sender", fields: [senderUserId], references: [id], onDelete: Cascade)
   user   User  @relation(fields: [userId], references: [id], onDelete: Cascade)
   post   Post? @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([createdAt, id])
 }
 
 model Comment {
@@ -136,6 +138,8 @@ model Comment {
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([createdAt, id])
 }
 
 model Alert {

@@ -4,6 +4,7 @@ import Loading from "~/components/shared/loading";
 import Comments from "~/components/shared/post/comments";
 import Post, { PostWithUser } from "~/components/shared/post/post";
 import { api } from "~/utils/api";
+import PostUser from "~/components/shared/post/post-user";
 
 export default function ThreadPage() {
   const router = useRouter();
@@ -23,9 +24,7 @@ export default function ThreadPage() {
 
       <div className="mt-8">
         {isLoading && <Loading />}
-        {!isLoading && post?.post && (
-          <Post post={post.post as PostWithUser} image={undefined} />
-        )}
+        {!isLoading && post?.post && <PostUser post={post.post} />}
 
         <div className="mt-5">
           {!isLoading && post?.post && (

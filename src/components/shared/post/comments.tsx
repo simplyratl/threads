@@ -6,6 +6,7 @@ import { api } from "~/utils/api";
 import Button from "../button";
 import PostUserComment from "./post-user-comment";
 import Loading from "~/components/shared/loading";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 interface CommentsProps {
   postId: string;
@@ -27,12 +28,15 @@ export default function Comments({ postId, post }: CommentsProps) {
     }[]
   >([]);
 
-  const { data: comments, isLoading } = api.comments.getCommentsByPost.useQuery(
+  const commentData = api.comments.getCommentsByPost.useInfiniteQuery(
     { postId },
     {
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
       refetchOnWindowFocus: false,
     }
   );
+
+  const comments = commentData.data?.pages.flatMap((page) => page.comments);
 
   const trpcUtils = api.useContext();
 
@@ -44,10 +48,19 @@ export default function Comments({ postId, post }: CommentsProps) {
       const updateData = (oldData: any) => {
         if (!oldData) return;
 
-        return [comment, ...oldData];
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page: any) => ({
+            ...page,
+            comments: [comment, ...page.comments],
+          })),
+        };
       };
 
-      trpcUtils.comments.getCommentsByPost.setData({ postId }, updateData);
+      trpcUtils.comments.getCommentsByPost.setInfiniteData(
+        { postId },
+        updateData
+      );
     },
   });
 
@@ -102,50 +115,41 @@ export default function Comments({ postId, post }: CommentsProps) {
     return null;
   };
 
-  if (isLoading) return <Loading />;
+  if (commentData.isLoading) return <Loading />;
 
   return (
     <div>
-      <div>
-        <div>
-          <TextareaAutosize
-            className="w-full resize-none rounded border border-foreground bg-transparent px-4 py-3 outline-none focus:ring-2 focus:ring-foreground"
-            placeholder="Start a thread..."
-            value={content}
-            // disabled={isSubmitting}
-            onChange={(event) => setContent(event.target.value)}
-            maxLength={500}
-          />
-
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-semibold text-foreground">
-              {content.length}/500
-            </span>
-            <Button onClick={() => void handleAddComment()}>Post</Button>
-          </div>
-        </div>
-      </div>
-
       <div className="mt-8">
-        <ul className="grid gap-4">
-          {!isLoading &&
-            comments &&
-            comments.map((comment: CommentWithChildren) => (
-              <li key={comment.id}>
-                <PostUserComment
-                  comment={comment}
-                  user={comment.user}
-                  childrenComments={comment.childComments}
-                />
+        <ul className="grid">
+          <InfiniteScroll
+            dataLength={comments?.length ?? 0}
+            next={commentData.fetchNextPage}
+            hasMore={commentData.hasNextPage as boolean}
+            loader={<Loading />}
+            className="grid gap-4 !overflow-hidden"
+            endMessage={
+              <span className="mb-4 mt-2 text-center">No more comments</span>
+            }
+          >
+            {!commentData.isLoading &&
+              comments &&
+              comments.map((comment: CommentWithChildren) => (
+                <li key={comment.id}>
+                  <PostUserComment
+                    comment={comment}
+                    user={comment.user}
+                    childrenComments={comment.childComments}
+                  />
 
-                <div className="mt-4 min-[400px]:pl-8">
-                  {comment.childComments &&
-                    comment.childComments.length > 0 && (
-                      <>{showCommentsOrButton(comment)}</>
-                    )}
-                </div>
-              </li>
-            ))}
+                  <div className="mt-4 border-b border-accent pb-2 min-[400px]:pl-8">
+                    {comment.childComments &&
+                      comment.childComments.length > 0 && (
+                        <>{showCommentsOrButton(comment)}</>
+                      )}
+                  </div>
+                </li>
+              ))}
+          </InfiniteScroll>
         </ul>
       </div>
     </div>

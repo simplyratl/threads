@@ -11,6 +11,7 @@ import { motion } from "framer-motion";
 import Zoom from "react-medium-image-zoom";
 import "react-medium-image-zoom/dist/styles.css";
 import VideoPlayer from "~/components/shared/video-player";
+import DisplayMedia from "~/components/shared/post/display-media";
 
 export interface PostWithUser extends PostType {
   user: User;
@@ -24,35 +25,21 @@ export interface PostWithUser extends PostType {
 
 interface PostProps {
   post: PostWithUser;
-  image?: string;
 }
 
-function Post({ post, image }: PostProps) {
-  const [imagePreview, setImagePreview] = React.useState<boolean | null>(null);
-  const imageRef = React.useRef<HTMLDivElement>(null);
-
+function Post({ post }: PostProps) {
   const handleClick = (event: React.MouseEvent) => {
     event.stopPropagation();
     event.preventDefault();
   };
 
   return (
-    <article>
+    <article className="w-full">
       <Link
         href={`/thread/${post.id}`}
-        className="disable-tap-highlight relative block overflow-hidden rounded-lg p-3 transition-colors duration-150 before:absolute before:left-[30px] before:top-14 before:h-full before:w-0.5 before:bg-accent hover:bg-transparent md:hover:bg-accent"
+        className="disable-tap-highlight relative block overflow-hidden rounded-lg transition-colors duration-150"
       >
-        <div className="w-fit" onClick={handleClick}>
-          <PostUser
-            id={post.user.id}
-            avatar={post.user.image as string}
-            username={post.user.name as string}
-            verified={post.user.verified}
-            timestamp={new Date(post.createdAt)}
-          />
-        </div>
-
-        <div className="relative -top-4 ml-[52px]">
+        <div className="relative">
           <div className="">
             <p
               className={`break-before-auto whitespace-break-spaces ${
@@ -64,34 +51,15 @@ function Post({ post, image }: PostProps) {
               {post.content}
             </p>
 
-            {post.media && (
-              <motion.div
-                className="mt-2 w-full cursor-pointer overflow-hidden rounded-xl lg:w-fit"
-                whileTap={{ scale: 0.98 }}
-                ref={imageRef}
-                onClick={(e) => {
-                  setImagePreview(true);
-                  handleClick(e);
-                }}
-              >
-                {post.mediaType === "IMAGE" ? (
-                  <Zoom>
-                    <img
-                      src={post.media}
-                      alt={post.content}
-                      className="h-full w-full object-cover"
-                    />
-                  </Zoom>
-                ) : (
-                  <VideoPlayer url={post.media} />
-                )}
-              </motion.div>
-            )}
+            <div className="">
+              <DisplayMedia post={post} />
+            </div>
           </div>
         </div>
 
-        <div className="relative -top-1 ml-[52px] w-fit" onClick={handleClick}>
+        <div className="w-fi3 mt-2" onClick={handleClick}>
           <ControlBar
+            post={post}
             postId={post.id}
             likes={post._count.likes}
             comments={post._count.comments}
@@ -100,13 +68,6 @@ function Post({ post, image }: PostProps) {
           />
         </div>
       </Link>
-
-      {/*<ImagePreview*/}
-      {/*  image={post.media as string}*/}
-      {/*  show={imagePreview}*/}
-      {/*  setShow={setImagePreview}*/}
-      {/*  startPosition={imageRef.current?.getBoundingClientRect()}*/}
-      {/*/>*/}
     </article>
   );
 }

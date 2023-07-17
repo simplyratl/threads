@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { HiXMark } from "react-icons/hi2";
 import Button from "../shared/button";
 import { AnimatePresence, motion } from "framer-motion";
+import { createPortal } from "react-dom";
 
 interface ModalProps {
   show: boolean;
@@ -12,6 +13,11 @@ interface ModalProps {
 
 const Modal = ({ setShow, show, children, title }: ModalProps) => {
   const contentRef = useRef<HTMLDivElement>(null);
+  const elRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    elRef.current = document.getElementById("modal-root") as HTMLDivElement;
+  }, [show]);
 
   useEffect(() => {
     if (show) document.body.style.overflow = "hidden";
@@ -57,7 +63,9 @@ const Modal = ({ setShow, show, children, title }: ModalProps) => {
     };
   }, [show]);
 
-  return (
+  if (!elRef.current) return null;
+
+  return createPortal(
     <AnimatePresence>
       {show && (
         <motion.section
@@ -71,7 +79,7 @@ const Modal = ({ setShow, show, children, title }: ModalProps) => {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.84 }}
             ref={contentRef}
-            className="mx-4 mt-20 h-fit max-h-[80%] w-full rounded-2xl bg-accent p-4 sm:mx-0 sm:w-[600px]"
+            className="mx-4 mt-20 h-fit max-h-[80%] w-full overflow-auto rounded-2xl bg-accent p-4 sm:mx-0 sm:w-[600px]"
           >
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-semibold">{title}</h2>
@@ -88,7 +96,8 @@ const Modal = ({ setShow, show, children, title }: ModalProps) => {
           </motion.div>
         </motion.section>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    elRef.current
   );
 };
 

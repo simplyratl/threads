@@ -15,6 +15,8 @@ import { api } from "~/utils/api";
 import Button from "../button";
 import PostUserComment from "./post-user-comment";
 import { CommentWithChildren } from "~/components/shared/post/comments";
+import AddCommentModal from "~/components/shared/modals/add-comment-modal";
+import addCommentModal from "~/components/shared/modals/add-comment-modal";
 
 type ControlBarCommentProps = {
   comment: CommentWithChildren;
@@ -47,26 +49,44 @@ function ControlBarComment({
     onSuccess: (comment) => {
       toast.success("Comment added");
 
-      const updatedData = (oldData: CommentWithChildren[] | undefined) => {
+      const updatedData = (oldData: any) => {
         if (!oldData) return;
 
-        return oldData.map((comm) => {
-          if (comm.id === comment.parentId) {
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page: any) => {
             return {
-              ...comm,
-              childComments: [...(comm.childComments ?? []), comment],
-            };
-          }
+              ...page,
+              comments: page.comments.map((comm: any) => {
+                if (comm.id === comment.parentId) {
+                  return {
+                    ...comm,
+                    childComments: [...(comm.childComments ?? []), comment],
+                  };
+                }
 
-          return comm;
-        });
+                return comm;
+              }),
+            };
+          }),
+        };
+
+        // return oldData.map((comm) => {
+        //   if (comm.id === comment.parentId) {
+        //     return {
+        //       ...comm,
+        //       childComments: [...(comm.childComments ?? []), comment],
+        //     };
+        //   }
+        //
+        //   return comm;
+        // });
       };
 
-      trpcUtils.comments.getCommentsByPost.setData(
+      trpcUtils.comments.getCommentsByPost.setInfiniteData(
         { postId: comment.postId },
         updatedData
       );
-
       setShowAddCommentModal(false);
       setContent("");
     },
@@ -107,8 +127,6 @@ function ControlBarComment({
 
     setLikedByCurrentUserState(!likedByCurrentUserState);
   }
-
-  console.log(showAddCommentModal);
 
   return (
     <>
@@ -155,47 +173,57 @@ function ControlBarComment({
         </div>
       </div>
 
-      <Modal
-        show={showAddCommentModal}
-        setShow={setShowAddCommentModal}
-        title="Add comment"
-      >
-        <div>
-          <PostUserComment
-            comment={comment}
-            user={comment.user}
-            disableControlBar
-          />
+      <AddCommentModal
+        comment={comment}
+        handleCommentAdd={handleCommentAdd}
+        isLoading={addChildComment.isLoading}
+        content={content}
+        setContent={setContent}
+        setShowModal={setShowAddCommentModal}
+        showModal={showAddCommentModal}
+      />
 
-          <div className="mt-2 text-xs">
-            <p className="font-semibold text-foreground">
-              replying to <span className="">{comment.user.name}</span>
-            </p>
-          </div>
+      {/*<Modal*/}
+      {/*  show={showAddCommentModal}*/}
+      {/*  setShow={setShowAddCommentModal}*/}
+      {/*  title="Add comment"*/}
+      {/*>*/}
+      {/*  <div>*/}
+      {/*    <PostUserComment*/}
+      {/*      comment={comment}*/}
+      {/*      user={comment.user}*/}
+      {/*      disableControlBar*/}
+      {/*    />*/}
 
-          <div className="mt-2 h-full">
-            <TextareaAutosize
-              className="w-full resize-none rounded border border-foreground bg-transparent px-4 py-3 outline-none focus:ring-2 focus:ring-foreground"
-              placeholder="Add a comment..."
-              value={content}
-              maxRows={20}
-              disabled={addChildComment.isLoading}
-              onChange={(event) => setContent(event.target.value)}
-              maxLength={500}
-            />
+      {/*    <div className="mt-2 text-xs">*/}
+      {/*      <p className="font-semibold text-foreground">*/}
+      {/*        replying to <span className="">{comment.user.name}</span>*/}
+      {/*      </p>*/}
+      {/*    </div>*/}
 
-            <span className="text-sm font-semibold text-foreground">
-              {content.length}/500
-            </span>
+      {/*    <div className="mt-2 h-full">*/}
+      {/*      <TextareaAutosize*/}
+      {/*        className="w-full resize-none rounded border border-foreground bg-transparent px-4 py-3 outline-none focus:ring-2 focus:ring-foreground"*/}
+      {/*        placeholder="Add a comment..."*/}
+      {/*        value={content}*/}
+      {/*        maxRows={20}*/}
+      {/*        disabled={addChildComment.isLoading}*/}
+      {/*        onChange={(event) => setContent(event.target.value)}*/}
+      {/*        maxLength={500}*/}
+      {/*      />*/}
 
-            <div className="flex justify-end">
-              <Button variant="minimal" onClick={() => handleCommentAdd()}>
-                Comment
-              </Button>
-            </div>
-          </div>
-        </div>
-      </Modal>
+      {/*      <span className="text-sm font-semibold text-foreground">*/}
+      {/*        {content.length}/500*/}
+      {/*      </span>*/}
+
+      {/*      <div className="flex justify-end">*/}
+      {/*        <Button variant="minimal" onClick={() => handleCommentAdd()}>*/}
+      {/*          Comment*/}
+      {/*        </Button>*/}
+      {/*      </div>*/}
+      {/*    </div>*/}
+      {/*  </div>*/}
+      {/*</Modal>*/}
     </>
   );
 }

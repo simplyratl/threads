@@ -109,7 +109,7 @@ function Navbar() {
   }
 
   return (
-    <header className="fixed bottom-0 left-0 z-50 h-20 w-full border-r bg-background px-4 py-6 md:bottom-auto md:top-0 md:h-screen md:w-20 lg:w-[330px]">
+    <header className="fixed bottom-0 left-0 z-50 h-20 w-full border-r border-accent bg-background px-4 py-6 md:bottom-auto md:top-0 md:h-screen md:w-20 lg:w-[330px]">
       <nav className="mx-auto flex h-full w-full max-w-5xl flex-row justify-between md:flex-col">
         <div className="flex w-full items-center gap-4 md:block md:w-auto">
           <Link href="/" className="hidden items-center gap-2 md:flex">

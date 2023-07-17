@@ -11,6 +11,7 @@ import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { v4 as uuidv4 } from "uuid";
 import ReactPlayer from "react-player";
 import VideoPlayer from "~/components/shared/video-player";
+import SmallPostUser from "~/components/shared/post/small-post-user";
 
 const CDNURL =
   "https://wxhaoxtosehvuuitysfj.supabase.co/storage/v1/object/public/multimedia/";
@@ -122,6 +123,8 @@ export default function ThreadsNew() {
     return videoTypes.includes(file.type);
   };
 
+  console.log(session.user);
+
   return (
     <>
       <Head>
@@ -133,11 +136,10 @@ export default function ThreadsNew() {
         <form onSubmit={handleSubmit}>
           <div className="w-full">
             {session?.user && (
-              <PostUser
+              <SmallPostUser
                 id={session?.user.id}
                 avatar={session.user.image as string}
                 username={session.user.name as string}
-                verified
               />
             )}
             <div className="mt-8">

@@ -8,6 +8,7 @@ import { api } from "~/utils/api";
 import { User } from "@prisma/client";
 import Loading from "~/components/shared/loading";
 import { AnimatePresence, motion } from "framer-motion";
+import SmallPostUser from "~/components/shared/post/small-post-user";
 
 const SearchInput = () => {
   const { data: session } = useSession();
@@ -32,12 +33,6 @@ const SearchInput = () => {
   );
 
   const hasUsers = users && users.length > 0;
-
-  useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, []);
 
   const handleInputFocus = () => {
     setSearch("");
@@ -79,11 +74,10 @@ const SearchInput = () => {
                       className="flex items-center justify-between  px-6 py-2 hover:bg-background"
                     >
                       <div className="relative -left-1">
-                        <PostUser
+                        <SmallPostUser
                           id={user.id}
                           username={user.name as string}
                           avatar={user.image as string}
-                          small
                         />
                       </div>
                     </Link>

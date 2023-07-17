@@ -2,6 +2,7 @@ import { useSession } from "next-auth/react";
 import React from "react";
 import PostUser from "../shared/post/post-user";
 import { api } from "~/utils/api";
+import SmallPostUser from "~/components/shared/post/small-post-user";
 
 interface Props {
   showCurrentProfile?: boolean;
@@ -15,15 +16,6 @@ export default function HomeProfile({
   const { data: session } = useSession();
   const user = session?.user;
 
-  const { data: verified } = api.users.getIfVerified.useQuery(
-    { username: user?.name as string },
-    {
-      refetchOnWindowFocus: false,
-      staleTime: Infinity,
-      enabled: !!user,
-    }
-  );
-
   const { data: recommendedUsers } = api.users.getRecommendedUsers.useQuery(
     { userId: user?.id as string },
     {
@@ -34,33 +26,33 @@ export default function HomeProfile({
 
   return (
     <div
-      className={`h-full w-[320px] flex-shrink-0 ${
+      className={`h-full w-[260px] pr-12 ${
         displayOnMobile ? "block" : "hidden lg:block"
       }`}
     >
       <div>
         {showCurrentProfile && user && (
           <div className="mb-2">
-            <PostUser
+            <SmallPostUser
               id={user.id}
-              avatar={user.image as string}
               username={user.name as string}
-              verified={verified?.verified ?? false}
+              avatar={user.image as string}
+              verified={user.verified}
+              big
             />
           </div>
         )}
         <div>
-          <h4 className="mb-4">Suggested for you</h4>
-          <ul className="flex flex-col gap-4">
+          <h4 className="font-semibold text-foreground">Suggested for you</h4>
+          <ul className="flex flex-col gap-2">
             {recommendedUsers &&
               recommendedUsers.map((recommendedUser, index) => (
                 <li key={index}>
-                  <PostUser
+                  <SmallPostUser
                     id={recommendedUser.id}
                     avatar={recommendedUser.image as string}
                     username={recommendedUser.name as string}
                     verified={recommendedUser.verified}
-                    small
                   />
                 </li>
               ))}

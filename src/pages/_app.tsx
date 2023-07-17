@@ -6,7 +6,7 @@ import "~/styles/globals.css";
 import Providers from "~/components/providers";
 import Navbar from "~/components/shared/navbar";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -35,6 +35,9 @@ const MyApp: AppType<{ session: Session | null }> = ({
   return (
     <SessionProvider session={session}>
       <Providers>
+        <div id="modal">
+          <div id="modal-root"></div>
+        </div>
         <Navbar />
         <div className="bg-background pb-20 pt-8 md:pb-0">
           <Component {...pageProps} />
