@@ -1,16 +1,10 @@
 import React from "react";
 // import PostUser from "@/components/ui/post-user";
-import Image from "next/image";
 import ControlBar from "./controls/control-bar";
-import ImagePreview from "../image-preview";
-import PostUser from "./post-user";
 import { Post as PostType, User } from "@prisma/client";
 import Link from "next/link";
 // import { Post, User } from "@prisma/client";
-import { motion } from "framer-motion";
-import Zoom from "react-medium-image-zoom";
 import "react-medium-image-zoom/dist/styles.css";
-import VideoPlayer from "~/components/shared/video-player";
 import DisplayMedia from "~/components/shared/post/display-media";
 
 export interface PostWithUser extends PostType {
@@ -26,6 +20,7 @@ export interface PostWithUser extends PostType {
     };
   }[];
   likedByCurrentUser: boolean;
+  repostedByCurrentUser: boolean;
 }
 
 interface PostProps {
@@ -71,6 +66,7 @@ function Post({ post, disableControlBar }: PostProps) {
               likes={post._count.likes}
               comments={post._count.comments}
               likedByCurrentUser={post.likedByCurrentUser}
+              repostedByCurrentUser={post.repostedByCurrentUser}
               userId={post.user.id}
             />
           </div>

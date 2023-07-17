@@ -7,6 +7,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { mockSession } from "next-auth/client/__tests__/helpers/mocks";
 import user = mockSession.user;
 import PostUser from "~/components/shared/post/post-user";
+import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 
 interface PostsProps {
   posts: PostWithUser[] | undefined;
@@ -17,12 +18,16 @@ interface PostsProps {
 
 function Posts({ posts, isLoading, hasMore, fetchNewPosts }: PostsProps) {
   if (isLoading) {
-    return <Loading />;
+    return (
+      <div className="-m-4 flex-1 flex-shrink-0 overflow-hidden px-4">
+        <SkeletonTheme baseColor="#202020" highlightColor="#444">
+          <Skeleton count={10} height={100} />
+        </SkeletonTheme>
+      </div>
+    );
   }
 
-  if (!posts) {
-    return <span>No posts</span>;
-  }
+  if (!posts) return <span> No threads </span>;
 
   return (
     <section className="-m-4 flex-1 flex-shrink-0 overflow-hidden">
@@ -31,7 +36,7 @@ function Posts({ posts, isLoading, hasMore, fetchNewPosts }: PostsProps) {
         next={fetchNewPosts}
         hasMore={hasMore as boolean}
         loader={<Loading />}
-        className="grid !overflow-hidden sm:gap-4"
+        className="grid !overflow-hidden"
         endMessage={
           <span className="mb-4 mt-2 text-center">No more posts</span>
         }

@@ -60,6 +60,8 @@ model User {
 
   comments Comment[]
 
+  reposts Repost[]
+
   followers User[] @relation(name: "Followers")
   following User[] @relation(name: "Followers")
 }
@@ -87,6 +89,8 @@ model Post {
   notifications Notification[]
 
   comments Comment[]
+
+  reposts Repost[]
 
   @@unique([createdAt, id])
   @@index([userId])
@@ -146,4 +150,17 @@ model Alert {
   id      String  @id @default(cuid())
   content String
   visible Boolean @default(false)
+}
+
+model Repost {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  postId String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
 }

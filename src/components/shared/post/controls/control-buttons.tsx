@@ -14,9 +14,10 @@ interface ControlButtonsProps {
   toggleLike: any;
   setShowAddCommentModal: any;
   comment?: CommentWithChildren;
-  post?: PostWithUser;
   handleLike: any;
+  handleRepost?: any;
   likedByCurrentUserState: boolean;
+  repostedByCurrentUserState?: boolean;
 }
 
 const ControlButtons = ({
@@ -24,8 +25,9 @@ const ControlButtons = ({
   likedByCurrentUserState,
   toggleLike,
   handleLike,
-  post,
   setShowAddCommentModal,
+  repostedByCurrentUserState,
+  handleRepost,
 }: ControlButtonsProps) => {
   return (
     <div className="mt-2 flex items-center gap-2">
@@ -65,8 +67,21 @@ const ControlButtons = ({
           <AiOutlineMessage className="h-6 w-6" />
         </div>
       )}
-      <div className="cursor-pointer hover:opacity-60">
-        <HiOutlineArrowPathRoundedSquare className="h-6 w-6" />
+      <div
+        className="cursor-pointer hover:opacity-60"
+        onClick={() => handleRepost()}
+      >
+        {repostedByCurrentUserState ? (
+          <motion.span
+            initial={{ rotate: 0 }}
+            animate={{ rotate: 180 }}
+            className="text-blue-400"
+          >
+            <HiOutlineArrowPathRoundedSquare className="h-6 w-6" />
+          </motion.span>
+        ) : (
+          <HiOutlineArrowPathRoundedSquare className="h-6 w-6" />
+        )}
       </div>
     </div>
   );

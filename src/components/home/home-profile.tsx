@@ -37,7 +37,7 @@ export default function HomeProfile({
               id={user.id}
               username={user.name as string}
               avatar={user.image as string}
-              verified={user?.verified ?? false}
+              verified={user?.verified}
               big
               centeredText
             />

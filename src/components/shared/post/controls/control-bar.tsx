@@ -22,6 +22,7 @@ type ControlBarProps = {
   comments: number;
   likedByCurrentUser: boolean;
   userId: string;
+  repostedByCurrentUser: boolean;
 };
 
 function ControlBar({
@@ -31,20 +32,37 @@ function ControlBar({
   comments,
   likedByCurrentUser,
   userId,
+  repostedByCurrentUser,
 }: ControlBarProps) {
   const { data: session } = useSession();
 
   const [showAddCommentModal, setShowAddCommentModal] = useState(false);
   const [content, setContent] = useState("");
 
-  const [likedByCurrentUserState, setLikedByCurrentUserState] =
-    useState(likedByCurrentUser);
+  const [likedByCurrentUserState, setLikedByCurrentUserState] = useState(
+    session?.user ? likedByCurrentUser : false
+  );
+
+  const [repostedByCurrentUserState, setRepostedByCurrentUserState] = useState(
+    session?.user ? repostedByCurrentUser : false
+  );
+
+  useEffect(() => {
+    if (repostedByCurrentUserState === post.repostedByCurrentUser) return;
+    setRepostedByCurrentUserState(post.repostedByCurrentUser);
+  }, [post.repostedByCurrentUser]);
 
   const trpcUtils = api.useContext();
 
   const toggleLike = api.posts.toggleLike.useMutation({
     onSuccess: (addedLike) => {
       // toast.success("Post liked!");
+    },
+  });
+
+  const toggleRepost = api.reposts.toggleRepost.useMutation({
+    onSuccess: (reposted) => {
+      toast.success(reposted ? "Post reposted!" : "Post un-reposted!");
     },
   });
 
@@ -123,6 +141,62 @@ function ControlBar({
     });
   }
 
+  function handleRepost() {
+    if (!session?.user)
+      return toast.error("You must be logged in to repost!", {
+        id: "repost-error",
+      });
+
+    setRepostedByCurrentUserState(!repostedByCurrentUserState);
+
+    const updateData: Parameters<
+      typeof trpcUtils.posts.infinitePosts.setInfiniteData
+    >[1] = (oldData) => {
+      if (!oldData) return;
+
+      return {
+        ...oldData,
+        pages: oldData.pages.map((page) => {
+          return {
+            ...page,
+            posts: page.posts.map((post) => {
+              if (post.id === postId) {
+                return {
+                  ...post,
+                  repostedByCurrentUser: !repostedByCurrentUser,
+                };
+              }
+
+              return post;
+            }),
+          };
+        }),
+      };
+    };
+
+    const updateSinglePost = (oldData: any) => {
+      if (!oldData) return;
+
+      const post = oldData.post;
+
+      return {
+        ...oldData,
+        post: {
+          ...post,
+          repostedByCurrentUser: !repostedByCurrentUserState,
+        },
+      };
+    };
+
+    trpcUtils.posts.infinitePosts.setInfiniteData({}, updateData);
+    trpcUtils.posts.infiniteProfileFeed.setInfiniteData({ userId }, updateData);
+    trpcUtils.posts.getByID.setData({ id: postId }, updateSinglePost);
+
+    Promise.resolve(toggleRepost.mutate({ postId })).catch(() => {
+      setRepostedByCurrentUserState(false);
+    });
+  }
+
   const addComment = api.comments.addParentComment.useMutation({
     onSuccess: (comment) => {
       toast.success("Comment posted");
@@ -170,8 +244,9 @@ function ControlBar({
         toggleLike={toggleLike}
         setShowAddCommentModal={setShowAddCommentModal}
         handleLike={handleLike}
-        post={post}
-        likedByCurrentUserState={likedByCurrentUser}
+        handleRepost={handleRepost}
+        likedByCurrentUserState={likedByCurrentUserState}
+        repostedByCurrentUserState={repostedByCurrentUserState}
       />
 
       <div>

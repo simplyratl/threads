@@ -27,12 +27,9 @@ const ListUsersModal = ({
     <Modal show={showModal} setShow={setShowModal} title={title}>
       <ul>
         {loading && <Loading />}
-        {loading && users && users.length === 0 && (
-          <span>No likes on this thread</span>
-        )}
+        {!loading && users && users.length === 0 && <span>Nothing found</span>}
 
-        {!loading &&
-          users &&
+        {users &&
           users.map((user) => (
             <li key={user.id}>
               <SmallPostUser

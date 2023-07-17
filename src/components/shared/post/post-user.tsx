@@ -10,6 +10,9 @@ import ControlBar from "~/components/shared/post/controls/control-bar";
 import DisplayMedia from "~/components/shared/post/display-media";
 import PostLine from "~/components/shared/post/post-line";
 import ReplyAvatars from "~/components/shared/post/reply-avatars";
+import { useRouter } from "next/router";
+import { HiOutlineArrowPathRoundedSquare } from "react-icons/hi2";
+import { useSession } from "next-auth/react";
 
 interface PostUserProps {
   post: PostWithUser;
@@ -18,6 +21,10 @@ interface PostUserProps {
 }
 
 function PostUser({ post, className, disableControlBar }: PostUserProps) {
+  const { data: session } = useSession();
+  const router = useRouter();
+  const { id: profileId } = router.query;
+
   const [showTimestamp, setShowTimestamp] = useState(false);
   const timeoutRef = useRef<number | null>(null);
 
@@ -34,11 +41,22 @@ function PostUser({ post, className, disableControlBar }: PostUserProps) {
 
   const displayThreadLine = post && post?._count.comments > 0;
 
+  const singlePageReposted =
+    router.pathname.includes("/profile/") &&
+    profileId &&
+    session?.user &&
+    session.user.id === (profileId as string) && // if on profile page and viewing own profile;
+    post.repostedByCurrentUser;
+
   return (
     <article>
       <Link
         href={`/thread/${post ? post.id : ""}`}
-        className={`disable-tap-highlight group relative flex gap-2.5 border-b border-accent px-3 py-4 hover:rounded-2xl hover:bg-transparent sm:py-6 sm:pl-4 sm:pr-6 md:hover:bg-accent`}
+        className={`disable-tap-highlight group relative flex gap-2.5 border-b border-accent px-3 py-4 hover:bg-transparent sm:pl-4 sm:pr-6 md:hover:bg-accent ${
+          singlePageReposted && post.repostedByCurrentUser
+            ? "py-6 pt-10"
+            : "sm:py-6"
+        }`}
       >
         <div className="relative-h-full">
           <div className="relative h-full">
@@ -65,7 +83,16 @@ function PostUser({ post, className, disableControlBar }: PostUserProps) {
           </div>
         </div>
 
-        <div className="w-full">
+        <div className="relative w-full">
+          {singlePageReposted && (
+            <div className="absolute bottom-[calc(100%+10px)] left-0 text-sm font-semibold text-foreground">
+              <span className="absolute right-[calc(100%+8px)]">
+                <HiOutlineArrowPathRoundedSquare className="h-5 w-5" />
+              </span>
+              <span>Reposted</span>
+            </div>
+          )}
+
           <div className={`flex flex-col text-base`}>
             <Link
               href={`/profile/${post.user.id}`}

@@ -62,13 +62,22 @@ export const postRouter = createTRPCRouter({
   getByID: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input: { id }, ctx }) => {
+      const currentUserId = ctx.session?.user.id;
+
       const post = await ctx.prisma.post.findUnique({
         where: {
           id,
         },
         include: {
           user: true,
-          likes: true,
+          likes:
+            currentUserId === null
+              ? false
+              : { where: { userId: currentUserId } },
+          reposts:
+            currentUserId === null
+              ? false
+              : { where: { userId: currentUserId } },
           _count: {
             select: {
               likes: true,
@@ -98,6 +107,7 @@ export const postRouter = createTRPCRouter({
         post: {
           ...post,
           likedByCurrentUser: post.likes?.length === 1,
+          repostedByCurrentUser: post.reposts?.length === 1,
         },
       };
     }),
@@ -201,7 +211,9 @@ export const postRouter = createTRPCRouter({
         limit,
         ctx,
         cursor,
-        whereClause: { userId },
+        whereClause: {
+          OR: [{ userId }, { reposts: { some: { user: { id: userId } } } }],
+        },
       });
     }),
 });
@@ -228,6 +240,8 @@ async function getInfinitePosts({
     include: {
       user: true,
       likes:
+        currentUserId === null ? false : { where: { userId: currentUserId } },
+      reposts:
         currentUserId === null ? false : { where: { userId: currentUserId } },
       comments: {
         take: 3,
@@ -260,6 +274,7 @@ async function getInfinitePosts({
       return {
         ...post,
         likedByCurrentUser: post.likes?.length === 1,
+        repostedByCurrentUser: post.reposts?.length === 1,
       };
     }),
     nextCursor,

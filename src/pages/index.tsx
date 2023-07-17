@@ -1,12 +1,12 @@
 import { motion, useScroll } from "framer-motion";
 import Head from "next/head";
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import HomeProfile from "~/components/home/home-profile";
 import Posts from "~/components/shared/post/posts";
 import { api } from "~/utils/api";
-import { PostWithUser } from "~/components/shared/post/post";
 import AlertTopBar from "~/components/shared/alert-top-bar";
+import { Alert } from ".prisma/client";
 
 export default function Home() {
   const logoRef = useRef(null);
@@ -24,8 +24,6 @@ export default function Home() {
   );
 
   const posts: any = postsData.data?.pages.flatMap((page) => page.posts);
-
-  console.log(posts);
 
   return (
     <>
@@ -65,3 +63,17 @@ export default function Home() {
     </>
   );
 }
+
+// export function getServerSideProps() {
+//   const { data: alert } = api.alerts.getAlert.useQuery(undefined, {
+//     refetchOnWindowFocus: false,
+//     staleTime: Infinity,
+//     cacheTime: Infinity,
+//   });
+//
+//   return {
+//     props: {
+//       alert,
+//     },
+//   };
+// }

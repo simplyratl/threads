@@ -30,7 +30,17 @@ export default function NotificationsPage() {
     (page) => page.notifications
   );
 
-  if (!notifications || (notificationsData.isLoading && session?.user)) {
+  if (!session?.user) {
+    return (
+      <main className="mx-auto min-h-screen max-w-2xl gap-16 px-4 md:ml-20 lg:ml-[34%] lg:p-0">
+        <span className="text-lg text-foreground">
+          You need to login to see notifications
+        </span>
+      </main>
+    );
+  }
+
+  if (notificationsData.isLoading) {
     return (
       <main className="mx-auto min-h-screen max-w-2xl gap-16 px-4 md:ml-20 lg:ml-[34%] lg:p-0">
         <Loading />
@@ -50,6 +60,8 @@ export default function NotificationsPage() {
         return "replied to your comment";
       case "mention":
         return "mentioned you in a post";
+      case "repost":
+        return "reposted your post";
       default:
         return "did something";
     }
@@ -61,7 +73,10 @@ export default function NotificationsPage() {
     if (type === "follow") {
       return `/profile/${notification.sender.id}`;
     } else if (
-      (type === "like" || type === "reply" || type === "reply_child") &&
+      (type === "like" ||
+        type === "reply" ||
+        type === "reply_child" ||
+        type === "repost") &&
       notification.postId
     ) {
       return `/thread/${notification.postId}`;
@@ -80,69 +95,59 @@ export default function NotificationsPage() {
       <main className="mx-auto min-h-screen max-w-2xl gap-16 px-4 md:ml-20 lg:ml-[34%] lg:p-0">
         <h1 className="text-3xl font-bold">Activity</h1>
 
-        {session?.user ? (
-          <div className="mt-3">
-            <ul>
-              <InfiniteScroll
-                dataLength={notifications?.length ?? 0}
-                next={notificationsData.fetchNextPage}
-                hasMore={notificationsData.hasNextPage as boolean}
-                loader={<Loading />}
-                className="grid gap-4 !overflow-hidden"
-                endMessage={
-                  <span className="mb-4 mt-2 text-center">
-                    No more notifications
-                  </span>
-                }
-              >
-                {notifications && notifications.length > 0 ? (
-                  notifications.map((notification: NotificationWithUser) => (
-                    <Link
-                      href={urlToNotification(notification)}
-                      key={notification.id}
-                    >
-                      <li className="flex w-full gap-3 rounded-lg px-4 pt-2 hover:bg-accent">
-                        <div className="h-11 w-11 flex-shrink-0 overflow-hidden rounded-full">
-                          <Image
-                            src={notification.sender.image as string}
-                            alt={notification.sender.name as string}
-                            fill
-                            className="!relative h-full w-full object-cover"
-                          />
+        <div className="mt-3">
+          <ul>
+            <InfiniteScroll
+              dataLength={notifications?.length ?? 0}
+              next={notificationsData.fetchNextPage}
+              hasMore={notificationsData.hasNextPage as boolean}
+              loader={<Loading />}
+              className="grid gap-4 !overflow-hidden"
+              endMessage={
+                <span className="mb-4 mt-2 text-center">
+                  No more notifications
+                </span>
+              }
+            >
+              {notifications && notifications.length > 0 ? (
+                notifications.map((notification: NotificationWithUser) => (
+                  <Link
+                    href={urlToNotification(notification)}
+                    key={notification.id}
+                  >
+                    <li className="flex w-full gap-3 rounded-lg px-4 pt-2 hover:bg-accent">
+                      <div className="h-11 w-11 flex-shrink-0 overflow-hidden rounded-full">
+                        <Image
+                          src={notification.sender.image as string}
+                          alt={notification.sender.name as string}
+                          fill
+                          className="!relative h-full w-full object-cover"
+                        />
+                      </div>
+                      <div className="w-full border-b border-accent pb-3">
+                        <div className="flex items-center gap-2">
+                          <h4 className="text-base font-semibold">
+                            {notification.sender.name}
+                          </h4>
+                          <span className="text-sm text-foreground">
+                            {formatToNowDate(new Date(notification.createdAt))}
+                          </span>
                         </div>
-                        <div className="w-full border-b border-accent pb-3">
-                          <div className="flex items-center gap-2">
-                            <h4 className="text-base font-semibold">
-                              {notification.sender.name}
-                            </h4>
-                            <span className="text-sm text-foreground">
-                              {formatToNowDate(
-                                new Date(notification.createdAt)
-                              )}
-                            </span>
-                          </div>
-                          <p className="m-0 text-base text-foreground">
-                            {formatNotificationType(notification.type)}
-                          </p>
-                        </div>
-                      </li>
-                    </Link>
-                  ))
-                ) : !notificationsData.isLoading ? (
-                  <span className="text-lg text-foreground">
-                    No new notifications
-                  </span>
-                ) : null}
-              </InfiniteScroll>
-            </ul>
-          </div>
-        ) : (
-          session === null && (
-            <span className="text-lg text-foreground">
-              You need to login to see notifications
-            </span>
-          )
-        )}
+                        <p className="m-0 text-base text-foreground">
+                          {formatNotificationType(notification.type)}
+                        </p>
+                      </div>
+                    </li>
+                  </Link>
+                ))
+              ) : !notificationsData.isLoading ? (
+                <span className="text-lg text-foreground">
+                  No new notifications
+                </span>
+              ) : null}
+            </InfiniteScroll>
+          </ul>
+        </div>
       </main>
     </>
   );
