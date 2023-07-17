@@ -4,11 +4,13 @@ import {
   getServerSession,
   type NextAuthOptions,
   type DefaultSession,
+  Session,
 } from "next-auth";
 import InstagramProvider from "next-auth/providers/instagram";
 import GoogleProvider from "next-auth/providers/google";
 import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
+import { AdapterUser } from "next-auth/adapters";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -38,7 +40,20 @@ declare module "next-auth" {
  */
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    session: ({ session, user }) => ({
+    session: ({
+      session,
+      user,
+    }: {
+      session: Session & {
+        user: {
+          name?: string | null;
+          email?: string | null;
+          image?: string | null;
+          verified?: boolean;
+        };
+      };
+      user: AdapterUser;
+    }) => ({
       ...session,
       user: {
         ...session.user,
