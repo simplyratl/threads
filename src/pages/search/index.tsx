@@ -36,16 +36,3 @@ export default function SearchPage() {
     </main>
   );
 }
-
-export const getStaticProps = async (context: GetServerSidePropsContext) => {
-  const ssg = ssgHelper();
-
-  await ssg.users.getRecommendedUsers.fetch({});
-
-  return {
-    props: {
-      trpcState: ssg.dehydrate(),
-    },
-    revalidate: 1,
-  };
-};

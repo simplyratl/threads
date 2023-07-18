@@ -18,7 +18,7 @@ interface PostsProps {
 function Posts({ posts, isLoading, hasMore, fetchNewPosts }: PostsProps) {
   if (isLoading) {
     return (
-      <div className="-m-4 flex-1 flex-shrink-0 overflow-hidden px-4">
+      <div className="flex-1 flex-shrink-0 overflow-hidden px-4">
         <Loading />
       </div>
     );

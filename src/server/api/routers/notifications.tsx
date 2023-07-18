@@ -12,13 +12,13 @@ export const notificationsRouter = createTRPCRouter({
   getNotificationsByUser: protectedProcedure
     .input(
       z.object({
-        userId: z.string(),
+        userId: z.string().nullable(),
         limit: z.number().optional(),
         cursor: z.object({ id: z.string(), createdAt: z.date() }).optional(),
       })
     )
     .query(async ({ input: { limit = 14, cursor, userId }, ctx }) => {
-      if (userId === null) return { notifications: [], nextCursor: undefined };
+      if (userId === null) throw new Error("User not found");
 
       return await getInfiniteNotifications({
         whereClause: { userId },

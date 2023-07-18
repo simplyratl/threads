@@ -12,6 +12,7 @@ import { HiOutlineArrowPathRoundedSquare } from "react-icons/hi2";
 
 interface ControlButtonsProps {
   toggleLike: any;
+  toggleRepost?: any;
   setShowAddCommentModal: any;
   comment?: CommentWithChildren;
   handleLike: any;
@@ -22,6 +23,7 @@ interface ControlButtonsProps {
 
 const ControlButtons = ({
   comment,
+  toggleRepost,
   likedByCurrentUserState,
   toggleLike,
   handleLike,
@@ -69,7 +71,7 @@ const ControlButtons = ({
       )}
       <div
         className="cursor-pointer hover:opacity-60"
-        onClick={() => handleRepost()}
+        onClick={() => !toggleRepost.isLoading && handleRepost()}
       >
         {repostedByCurrentUserState ? (
           <motion.span

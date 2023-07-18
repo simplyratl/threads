@@ -2,15 +2,11 @@ import { useRouter } from "next/router";
 import React from "react";
 import Loading from "~/components/shared/loading";
 import Comments from "~/components/shared/post/comments/comments";
-import Post, { PostWithUser } from "~/components/shared/post/post";
+import { PostWithUser } from "~/components/shared/post/post";
 import { api } from "~/utils/api";
 import PostUser from "~/components/shared/post/post-user";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
-import { appRouter } from "~/server/api/root";
-import { prisma } from "~/server/db";
-import superjson from "superjson";
 import { getServerSideProps } from "~/pages/_app";
-import { createServerSideHelpers } from "@trpc/react-query/server";
 import { ssgHelper } from "~/utils/ssg";
 
 export default function ThreadPage(

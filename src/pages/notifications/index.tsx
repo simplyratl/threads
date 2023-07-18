@@ -7,6 +7,8 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import Loading from "~/components/shared/loading";
 import { api } from "~/utils/api";
 import { formatToNowDate } from "~/utils/formatToNowDate";
+import { GetServerSideProps } from "next";
+import { getServerAuthSession } from "~/server/auth";
 
 interface NotificationWithUser extends Notification {
   user: User;
@@ -18,7 +20,7 @@ export default function NotificationsPage() {
 
   const notificationsData =
     api.notifications.getNotificationsByUser.useInfiniteQuery(
-      { userId: session?.user?.id as string },
+      { userId: session?.user.id as string | null },
       {
         getNextPageParam: (lastPage) => lastPage.nextCursor,
         refetchOnWindowFocus: false,
@@ -104,18 +106,17 @@ export default function NotificationsPage() {
               loader={<Loading />}
               className="grid gap-4 !overflow-hidden"
               endMessage={
-                <span className="mb-4 mt-2 text-center">
-                  No more notifications
-                </span>
+                <span className="mb-4 mt-2">No new notifications</span>
               }
             >
-              {notifications && notifications.length > 0 ? (
+              {notifications &&
+                notifications.length > 0 &&
                 notifications.map((notification: NotificationWithUser) => (
                   <Link
                     href={urlToNotification(notification)}
                     key={notification.id}
                   >
-                    <li className="flex w-full gap-3 rounded-lg px-4 pt-2 hover:bg-accent">
+                    <li className="flex w-full gap-3 rounded-lg pt-2 sm:px-4 sm:hover:bg-accent">
                       <div className="h-11 w-11 flex-shrink-0 overflow-hidden rounded-full">
                         <Image
                           src={notification.sender.image as string}
@@ -139,12 +140,7 @@ export default function NotificationsPage() {
                       </div>
                     </li>
                   </Link>
-                ))
-              ) : !notificationsData.isLoading ? (
-                <span className="text-lg text-foreground">
-                  No new notifications
-                </span>
-              ) : null}
+                ))}
             </InfiniteScroll>
           </ul>
         </div>
@@ -152,3 +148,10 @@ export default function NotificationsPage() {
     </>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const session = await getServerAuthSession(ctx);
+  return {
+    props: { session },
+  };
+};

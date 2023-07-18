@@ -241,6 +241,7 @@ function ControlBar({
   return (
     <div>
       <ControlButtons
+        toggleRepost={toggleRepost}
         toggleLike={toggleLike}
         setShowAddCommentModal={setShowAddCommentModal}
         handleLike={handleLike}
