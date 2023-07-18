@@ -3,26 +3,23 @@ import React from "react";
 import PostUser from "../shared/post/post-user";
 import { api } from "~/utils/api";
 import SmallPostUser from "~/components/shared/post/small-post-user";
+import { GetServerSidePropsContext } from "next";
+import { ssgHelper } from "~/utils/ssg";
+import { User } from "@prisma/client";
 
 interface Props {
   showCurrentProfile?: boolean;
   displayOnMobile?: boolean;
+  recommendedUsers?: User[];
 }
 
 export default function HomeProfile({
   showCurrentProfile = true,
   displayOnMobile = false,
+  recommendedUsers,
 }: Props) {
   const { data: session } = useSession();
   const user = session?.user;
-
-  const { data: recommendedUsers } = api.users.getRecommendedUsers.useQuery(
-    { userId: user?.id as string },
-    {
-      refetchOnWindowFocus: false,
-      staleTime: Infinity,
-    }
-  );
 
   return (
     <div
@@ -30,37 +27,39 @@ export default function HomeProfile({
         displayOnMobile ? "block" : "hidden lg:block"
       }`}
     >
-      <div>
-        {showCurrentProfile && user && (
-          <div className="mb-2">
-            <SmallPostUser
-              id={user.id}
-              username={user.name as string}
-              avatar={user.image as string}
-              verified={user?.verified}
-              big
-              centeredText
-            />
-          </div>
-        )}
+      {user && (
         <div>
-          <h4 className="font-semibold text-foreground">Suggested for you</h4>
-          <ul className="flex flex-col gap-2">
-            {recommendedUsers &&
-              recommendedUsers.map((recommendedUser, index) => (
-                <li key={index}>
-                  <SmallPostUser
-                    id={recommendedUser.id}
-                    avatar={recommendedUser.image as string}
-                    username={recommendedUser.name as string}
-                    verified={recommendedUser.verified}
-                    centeredText
-                  />
-                </li>
-              ))}
-          </ul>
+          {showCurrentProfile && user && (
+            <div className="mb-2">
+              <SmallPostUser
+                id={user.id}
+                username={user.name as string}
+                avatar={user.image as string}
+                verified={user?.verified}
+                big
+                centeredText
+              />
+            </div>
+          )}
+          <div>
+            <h4 className="font-semibold text-foreground">Suggested for you</h4>
+            <ul className="flex flex-col gap-2">
+              {recommendedUsers &&
+                recommendedUsers.map((recommendedUser, index) => (
+                  <li key={index}>
+                    <SmallPostUser
+                      id={recommendedUser.id}
+                      avatar={recommendedUser.image as string}
+                      username={recommendedUser.name as string}
+                      verified={recommendedUser.verified}
+                      centeredText
+                    />
+                  </li>
+                ))}
+            </ul>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

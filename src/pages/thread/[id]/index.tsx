@@ -5,10 +5,19 @@ import Comments from "~/components/shared/post/comments/comments";
 import Post, { PostWithUser } from "~/components/shared/post/post";
 import { api } from "~/utils/api";
 import PostUser from "~/components/shared/post/post-user";
+import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
+import { appRouter } from "~/server/api/root";
+import { prisma } from "~/server/db";
+import superjson from "superjson";
+import { getServerSideProps } from "~/pages/_app";
+import { createServerSideHelpers } from "@trpc/react-query/server";
+import { ssgHelper } from "~/utils/ssg";
 
-export default function ThreadPage() {
+export default function ThreadPage(
+  props: InferGetServerSidePropsType<typeof getServerSideProps>
+) {
+  const { id } = props;
   const router = useRouter();
-  const { id } = router.query;
 
   const { data: post, isLoading } = api.posts.getByID.useQuery(
     { id: id as string },
@@ -53,3 +62,28 @@ export default function ThreadPage() {
     </main>
   );
 }
+
+export const getStaticProps = async (
+  context: GetServerSidePropsContext<{ id: string }>
+) => {
+  const ssg = ssgHelper();
+
+  const id = context.params?.id as string;
+
+  await ssg.posts.getByID.fetch({ id });
+
+  return {
+    props: {
+      trpcState: ssg.dehydrate(),
+      id,
+    },
+    revalidate: 1,
+  };
+};
+
+export const getStaticPaths = () => {
+  return {
+    paths: [],
+    fallback: "blocking",
+  };
+};

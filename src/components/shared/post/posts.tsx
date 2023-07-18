@@ -1,13 +1,12 @@
-import Image from "next/image";
-import { api } from "~/utils/api";
-import Post, { PostWithUser } from "./post";
+import { PostWithUser } from "./post";
 import Loading from "../loading";
-import { User, type Post as PostType } from "@prisma/client";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { mockSession } from "next-auth/client/__tests__/helpers/mocks";
-import user = mockSession.user;
 import PostUser from "~/components/shared/post/post-user";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
+import { createServerSideHelpers } from "@trpc/react-query/server";
+import { appRouter } from "~/server/api/root";
+import superjson from "superjson";
 
 interface PostsProps {
   posts: PostWithUser[] | undefined;
@@ -20,9 +19,7 @@ function Posts({ posts, isLoading, hasMore, fetchNewPosts }: PostsProps) {
   if (isLoading) {
     return (
       <div className="-m-4 flex-1 flex-shrink-0 overflow-hidden px-4">
-        <SkeletonTheme baseColor="#202020" highlightColor="#444">
-          <Skeleton count={10} height={100} />
-        </SkeletonTheme>
+        <Loading />
       </div>
     );
   }

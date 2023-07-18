@@ -1,4 +1,4 @@
-import { getServerSession, type Session } from "next-auth";
+import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
 import { type AppType } from "next/app";
 import { api } from "~/utils/api";
@@ -6,10 +6,11 @@ import "~/styles/globals.css";
 import Providers from "~/components/providers";
 import Navbar from "~/components/shared/navbar";
 import { useRouter } from "next/router";
-import { useEffect, useRef, useState } from "react";
-import { authOptions } from "~/server/auth";
+import { useEffect, useState } from "react";
+import { getServerAuthSession } from "~/server/auth";
 
 import "react-loading-skeleton/dist/skeleton.css";
+import { GetServerSideProps } from "next";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -33,7 +34,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
   }, []);
 
   useEffect(() => {
-    if (session !== null) {
+    if (session?.user !== null) {
       setIsSessionLoading(false);
     }
   }, [session]);
@@ -60,22 +61,11 @@ const MyApp: AppType<{ session: Session | null }> = ({
   );
 };
 
-export async function getServerSideProps(context: any) {
-  const session = await getServerSession(context.req, context.res, authOptions);
-
-  if (!session) {
-    return {
-      redirect: {
-        destination: "/",
-        permanent: false,
-      },
-    };
-  }
-
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const session = await getServerAuthSession(ctx);
   return {
-    props: {
-      session,
-    },
+    props: { session },
   };
-}
+};
+
 export default api.withTRPC(MyApp);

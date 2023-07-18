@@ -6,9 +6,34 @@ import HomeProfile from "~/components/home/home-profile";
 import Posts from "~/components/shared/post/posts";
 import { api } from "~/utils/api";
 import AlertTopBar from "~/components/shared/alert-top-bar";
-import { Alert } from ".prisma/client";
+import { createServerSideHelpers } from "@trpc/react-query/server";
+import { appRouter } from "~/server/api/root";
+import superjson from "superjson";
+import { GetServerSidePropsContext } from "next";
+import { getSession, useSession } from "next-auth/react";
+import { getPrismaClient } from "@prisma/client/runtime";
+import { prisma } from "~/server/db";
+import { ssgHelper } from "~/utils/ssg";
+import { getServerAuthSession } from "~/server/auth";
 
 export default function Home() {
+  const { data: session } = useSession();
+  const user = session?.user;
+
+  const { data: alert } = api.alerts.getAlert.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+    staleTime: Infinity,
+    cacheTime: Infinity,
+  });
+
+  const { data: recommendedUsers } = api.users.getRecommendedUsers.useQuery(
+    { userId: user?.id as string },
+    {
+      refetchOnWindowFocus: false,
+      staleTime: Infinity,
+    }
+  );
+
   const logoRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: logoRef,
@@ -34,7 +59,7 @@ export default function Home() {
       </Head>
       <main className="mx-auto min-h-screen max-w-lg px-4 md:ml-auto lg:ml-[34%] lg:max-w-4xl lg:p-0">
         <div>
-          <AlertTopBar />
+          <AlertTopBar alert={alert} />
         </div>
 
         <div className="mx-auto block h-10 w-10 md:hidden">
@@ -57,23 +82,27 @@ export default function Home() {
             fetchNewPosts={postsData.fetchNextPage}
             hasMore={postsData.hasNextPage}
           />
-          <HomeProfile displayOnMobile={false} />
+          <HomeProfile
+            displayOnMobile={false}
+            recommendedUsers={recommendedUsers}
+          />
         </div>
       </main>
     </>
   );
 }
 
-// export function getServerSideProps() {
-//   const { data: alert } = api.alerts.getAlert.useQuery(undefined, {
-//     refetchOnWindowFocus: false,
-//     staleTime: Infinity,
-//     cacheTime: Infinity,
-//   });
-//
-//   return {
-//     props: {
-//       alert,
-//     },
-//   };
-// }
+export const getStaticProps = async (context: GetServerSidePropsContext) => {
+  const ssg = ssgHelper();
+  await ssg.alerts.getAlert.fetch();
+
+  await ssg.users.getRecommendedUsers.prefetch({});
+  // await ssg.posts.infinitePosts.prefetchInfinite({});
+
+  return {
+    props: {
+      trpcState: ssg.dehydrate(),
+    },
+    revalidate: 1,
+  };
+};

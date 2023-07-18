@@ -1,13 +1,7 @@
 import React from "react";
-import { api } from "~/utils/api";
+import { Alert } from "@prisma/client";
 
-const AlertTopBar = () => {
-  const { data: alert } = api.alerts.getAlert.useQuery(undefined, {
-    refetchOnWindowFocus: false,
-    staleTime: Infinity,
-    cacheTime: Infinity,
-  });
-
+const AlertTopBar = ({ alert }: { alert: any }) => {
   if (!alert) return null;
 
   return (
