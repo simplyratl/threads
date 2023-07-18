@@ -246,8 +246,12 @@ function ControlBar({
         setShowAddCommentModal={setShowAddCommentModal}
         handleLike={handleLike}
         handleRepost={handleRepost}
-        likedByCurrentUserState={likedByCurrentUserState}
-        repostedByCurrentUserState={repostedByCurrentUserState}
+        likedByCurrentUserState={
+          session?.user ? likedByCurrentUserState : false
+        }
+        repostedByCurrentUserState={
+          session?.user ? repostedByCurrentUserState : false
+        }
       />
 
       <div>
