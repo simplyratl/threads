@@ -5,6 +5,7 @@ import { GetServerSidePropsContext } from "next";
 import { ssgHelper } from "~/utils/ssg";
 import { api } from "~/utils/api";
 import { useSession } from "next-auth/react";
+import Head from "next/head";
 
 export default function SearchPage() {
   const { data: session } = useSession();
@@ -19,20 +20,26 @@ export default function SearchPage() {
   );
 
   return (
-    <main className="mx-auto min-h-screen max-w-2xl px-4 md:ml-20 lg:ml-[34%] lg:p-0">
-      <h1 className="text-3xl font-bold">Search</h1>
+    <>
+      <Head>
+        <title>Threads | Search</title>
+      </Head>
 
-      <div className="mt-8">
-        <div className="mb-4">
-          <SearchInput />
+      <main className="mx-auto min-h-screen max-w-2xl px-4 md:ml-20 lg:ml-[34%] lg:p-0">
+        <h1 className="text-3xl font-bold">Search</h1>
+
+        <div className="mt-8">
+          <div className="mb-4">
+            <SearchInput />
+          </div>
+
+          <HomeProfile
+            showCurrentProfile={false}
+            displayOnMobile
+            recommendedUsers={recommendedUsers}
+          />
         </div>
-
-        <HomeProfile
-          showCurrentProfile={false}
-          displayOnMobile
-          recommendedUsers={recommendedUsers}
-        />
-      </div>
-    </main>
+      </main>
+    </>
   );
 }

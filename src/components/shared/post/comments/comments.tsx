@@ -6,6 +6,7 @@ import Button from "../../button";
 import PostUserComment from "./post-user-comment";
 import Loading from "~/components/shared/loading";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { PostWithUser } from "~/components/shared/post/post";
 
 interface CommentsProps {
   postId?: string;
@@ -19,6 +20,15 @@ interface CommentsProps {
 export interface CommentWithChildren extends Comment {
   childComments: any;
   user: User;
+  post?: PostWithUser;
+  repostedByCurrentUser: boolean;
+  likedByCurrentUser: boolean;
+  reposts: any;
+  likes: any;
+  _count: {
+    likes: number;
+    reposts: number;
+  };
 }
 
 export default function Comments({
@@ -142,7 +152,7 @@ export default function Comments({
                     childrenComments={comment.childComments}
                   />
 
-                  <div className="mt-4 border-b border-accent pb-2 min-[400px]:pl-8">
+                  <div className="mt-4 border-b border-border_color pb-2 min-[400px]:pl-8">
                     {comment.childComments &&
                       comment.childComments.length > 0 && (
                         <>{showCommentsOrButton(comment)}</>

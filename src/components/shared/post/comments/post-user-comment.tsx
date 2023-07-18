@@ -7,6 +7,7 @@ import { useState, useRef } from "react";
 import { User, Comment as CommentType } from "@prisma/client";
 import ControlBarComment from "../controls/control-bar-comments";
 import PostLine from "~/components/shared/post/post-line";
+import { CommentWithChildren } from "~/components/shared/post/comments/comments";
 
 interface Comment extends CommentType {
   user: User;
@@ -15,7 +16,7 @@ interface Comment extends CommentType {
 
 interface PostUserProps {
   user: User;
-  comment: Comment;
+  comment: CommentWithChildren;
   small?: boolean;
   childrenComments?: Comment[];
   className?: string;
@@ -30,25 +31,11 @@ function PostUserComment({
   disableControlBar = false,
   className,
 }: PostUserProps) {
-  const [showTimestamp, setShowTimestamp] = useState(false);
-  const timeoutRef = useRef<number | null>(null);
-
-  const handleMouseEnter = () => {
-    timeoutRef.current = window.setTimeout(() => {
-      setShowTimestamp(true);
-    }, 600);
-  };
-
-  const handleMouseLeave = () => {
-    clearTimeout(timeoutRef.current!);
-    setShowTimestamp(false);
-  };
-
   const displayThreadLine =
     comment.parentId || (childrenComments && childrenComments?.length > 0);
 
   return (
-    <div className={`relative flex gap-2.5`}>
+    <div className={`relative flex gap-2.5 sm:pl-4 sm:pr-6`}>
       <div className="relative-h-full">
         <div className="relative h-full">
           <Link
@@ -100,11 +87,13 @@ function PostUserComment({
 
           <p>{comment.content}</p>
 
-          {!disableControlBar && (
+          {!disableControlBar && !comment.parentId && (
             <ControlBarComment
               comment={comment}
-              likes={0}
-              likedByCurrentUser={false}
+              likes={comment._count ? comment._count.likes : 0}
+              reposts={comment._count ? comment._count.reposts : 0}
+              likedByCurrentUser={comment.likedByCurrentUser}
+              repostedByCurrentUser={comment.repostedByCurrentUser}
             />
           )}
         </div>

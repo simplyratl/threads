@@ -19,7 +19,7 @@ const DisplayMedia = ({ post, disableZoom }: PostProps) => {
     if (disableZoom) {
       return (
         <img
-          className="h-full w-full object-cover"
+          className="h-full max-h-[560px] w-full object-cover"
           src={post.media as string}
           alt="post media"
         />
@@ -28,7 +28,7 @@ const DisplayMedia = ({ post, disableZoom }: PostProps) => {
       return (
         <Zoom>
           <img
-            className="h-full w-full object-cover"
+            className="h-full max-h-[560px] w-full object-cover"
             src={post.media as string}
             alt="post media"
           />

@@ -24,29 +24,29 @@ function Navbar() {
     {
       name: "Home",
       href: "/",
-      icon: <HiOutlineHome className="h-8 w-8 md:h-7 md:w-7" />,
-      activeIcon: <HiHome className="h-8 w-8 md:h-7 md:w-7" />,
+      icon: <HiOutlineHome className="h-7 w-7" />,
+      activeIcon: <HiHome className="h-7 w-7" />,
       private: false,
     },
     {
       name: "Search",
       href: "/search",
-      icon: <HiOutlineMagnifyingGlass className="h-8 w-8 md:h-7 md:w-7" />,
-      activeIcon: <HiMagnifyingGlass className="h-8 w-8 md:h-7 md:w-7" />,
+      icon: <HiOutlineMagnifyingGlass className="h-7 w-7" />,
+      activeIcon: <HiMagnifyingGlass className="h-7 w-7" />,
       private: false,
     },
     {
       name: "Create a Thread",
       href: "/threads/new",
-      icon: <HiPencilSquare className="h-8 w-8 md:h-7 md:w-7" />,
-      activeIcon: <HiMiniPencilSquare className="h-8 w-8 md:h-7 md:w-7" />,
+      icon: <HiPencilSquare className="h-7 w-7" />,
+      activeIcon: <HiMiniPencilSquare className="h-7 w-7" />,
       private: true,
     },
     {
       name: "Notifications",
-      href: `/notifications`,
-      icon: <HiOutlineHeart className="h-8 w-8 md:h-7 md:w-7" />,
-      activeIcon: <HiHeart className="h-8 w-8 md:h-7 md:w-7" />,
+      href: `/notifications/${session?.user.id as string}`,
+      icon: <HiOutlineHeart className="h-7 w-7" />,
+      activeIcon: <HiHeart className="h-7 w-7" />,
       private: false,
     },
     {
@@ -91,25 +91,24 @@ function Navbar() {
     if (link.private && !session?.user) return null;
 
     return (
-      <li
-        key={link.name}
-        className={`rounded-lg hover:bg-accent ${active ? "bg-accent" : ""}`}
-      >
+      <li key={link.name} className={`rounded-lg hover:bg-accent`}>
         <Link
           href={link.href}
-          className={`flex items-center gap-2 px-2 py-2 text-lg text-foreground ${
-            active ? "font-bold" : ""
+          className={`flex items-center gap-2 px-2 py-2 text-lg ${
+            active ? "text-black dark:text-white" : "text-foreground"
           }`}
         >
           <span>{active ? link.activeIcon : link.icon}</span>
-          <span className="hidden font-medium lg:block">{link.name}</span>
+          <span className={`hidden lg:block ${active ? "font-bold" : ""}`}>
+            {link.name}
+          </span>
         </Link>
       </li>
     );
   }
 
   return (
-    <header className="fixed bottom-0 left-0 z-50 h-20 w-full border-r border-accent bg-background px-4 py-6 md:bottom-auto md:top-0 md:h-screen md:w-20 lg:w-[330px]">
+    <header className="fixed bottom-0 left-0 z-50 h-16 w-full border-r border-border_color bg-background px-4 py-6 md:bottom-auto md:top-0 md:h-screen md:w-20 lg:w-[330px]">
       <nav className="mx-auto flex h-full w-full max-w-5xl flex-row justify-between md:flex-col">
         <div className="flex w-full items-center gap-4 md:block md:w-auto">
           <Link href="/" className="hidden items-center gap-2 md:flex">
@@ -138,7 +137,7 @@ function Navbar() {
                     className={`flex items-center gap-2 px-2 py-2 text-lg font-semibold text-foreground`}
                   >
                     <span>
-                      <HiOutlineUser className="h-8 w-8 rounded-full md:h-7 md:w-7" />
+                      <HiOutlineUser className="h-7 w-7 rounded-full" />
                     </span>
                     <span className="hidden lg:block">Profile</span>
                   </div>

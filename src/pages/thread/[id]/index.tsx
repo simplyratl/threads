@@ -8,6 +8,7 @@ import PostUser from "~/components/shared/post/post-user";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { getServerSideProps } from "~/pages/_app";
 import { ssgHelper } from "~/utils/ssg";
+import Head from "next/head";
 
 export default function ThreadPage(
   props: InferGetServerSidePropsType<typeof getServerSideProps>
@@ -32,30 +33,41 @@ export default function ThreadPage(
     }
   );
 
-  const comments = commentData.data?.pages.flatMap((page) => page.comments);
+  const comments: any = commentData.data?.pages.flatMap(
+    (page) => page.comments
+  );
 
   return (
-    <main className="mx-auto min-h-screen max-w-2xl px-4 md:ml-20 lg:ml-[34%] lg:p-0">
-      <h1 className="text-3xl font-bold">Thread</h1>
+    <>
+      <Head>
+        <title>
+          Thread | {post?.post.user.name ?? ""} -{" "}
+          {post?.post.content.substring(0, 32)}...
+        </title>
+      </Head>
 
-      <div className="mt-8">
-        {isLoading && <Loading />}
-        {!isLoading && post?.post && (
-          <PostUser post={post.post as PostWithUser} />
-        )}
+      <main className="mx-auto min-h-screen max-w-2xl px-4 md:ml-20 lg:ml-[34%] lg:p-0">
+        <h1 className="text-3xl font-bold">Thread</h1>
 
-        <div className="mt-5">
+        <div className="mt-8">
+          {isLoading && <Loading />}
           {!isLoading && post?.post && (
-            <Comments
-              comments={comments}
-              commentData={commentData}
-              postId={post?.post.id}
-              post={post.post}
-            />
+            <PostUser post={post.post as PostWithUser} />
           )}
+
+          <div className="mt-5">
+            {!isLoading && post?.post && (
+              <Comments
+                comments={comments}
+                commentData={commentData}
+                postId={post?.post.id}
+                post={post.post}
+              />
+            )}
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
+    </>
   );
 }
 

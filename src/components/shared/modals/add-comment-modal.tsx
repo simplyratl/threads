@@ -9,6 +9,7 @@ import { PostWithUser } from "~/components/shared/post/post";
 import DisplayMedia from "~/components/shared/post/display-media";
 import PostUser from "~/components/shared/post/post-user";
 import SmallPostUser from "~/components/shared/post/small-post-user";
+import { CommentWithChildren } from "~/components/shared/post/comments/comments";
 
 interface Comment extends CommentType {
   user: User;
@@ -18,7 +19,7 @@ interface Comment extends CommentType {
 interface AddCommentModalProps {
   showModal: boolean;
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
-  comment?: Comment;
+  comment?: CommentWithChildren;
   post?: PostWithUser;
   content: string;
   setContent: React.Dispatch<React.SetStateAction<string>>;
@@ -73,7 +74,7 @@ const AddCommentModal = ({
 
         <div className="mt-2 h-full">
           <TextareaAutosize
-            className="w-full resize-none rounded border border-foreground bg-transparent px-4 py-3 outline-none focus:ring-2 focus:ring-foreground"
+            className="w-full resize-none rounded border border-border_color bg-transparent px-4 py-3 outline-none focus:ring-2 focus:ring-foreground"
             placeholder="Add a comment..."
             value={content}
             maxRows={20}

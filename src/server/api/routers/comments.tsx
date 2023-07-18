@@ -110,11 +110,61 @@ export const commentsRouter = createTRPCRouter({
       if (userId === null) return { comments: [], nextCursor: undefined };
 
       return await getInfiniteComments({
-        whereClause: { userId },
+        whereClause: {
+          userId,
+        },
         ctx,
         limit,
         cursor,
       });
+    }),
+  toggleCommentLike: protectedProcedure
+    .input(z.object({ commentId: z.string() }))
+    .mutation(async ({ input: { commentId }, ctx }) => {
+      const data = { commentId, userId: ctx.session.user.id };
+
+      let liked = false;
+
+      const existingLike = await ctx.prisma.commentLike.findUnique({
+        where: {
+          userId_commentId: data,
+        },
+      });
+
+      if (existingLike) {
+        await ctx.prisma.commentLike.delete({
+          where: { userId_commentId: data },
+        });
+      } else {
+        await ctx.prisma.commentLike.create({ data });
+        liked = true;
+      }
+
+      return { liked };
+    }),
+  toggleCommentRepost: protectedProcedure
+    .input(z.object({ commentId: z.string() }))
+    .mutation(async ({ input: { commentId }, ctx }) => {
+      const data = { commentId, userId: ctx.session.user.id };
+
+      let reposted = false;
+
+      const existingRepost = await ctx.prisma.commentRepost.findUnique({
+        where: {
+          userId_commentId: data,
+        },
+      });
+
+      if (existingRepost) {
+        await ctx.prisma.commentRepost.delete({
+          where: { userId_commentId: data },
+        });
+      } else {
+        await ctx.prisma.commentRepost.create({ data });
+        reposted = true;
+      }
+
+      return { reposted };
     }),
 });
 
@@ -130,6 +180,8 @@ async function getInfiniteComments({
   limit: number;
   cursor: { id: string; createdAt: Date } | undefined;
 }) {
+  const currentUserId = ctx.session?.user.id;
+
   const comments = await ctx.prisma.comment.findMany({
     take: limit + 1,
     cursor: cursor ? { createdAt_id: cursor } : undefined,
@@ -137,6 +189,27 @@ async function getInfiniteComments({
     where: whereClause,
     include: {
       user: true,
+      likes:
+        currentUserId === null ? false : { where: { userId: currentUserId } },
+      reposts:
+        currentUserId === null ? false : { where: { userId: currentUserId } },
+      _count: {
+        select: {
+          likes: true,
+          reposts: true,
+        },
+      },
+      post: {
+        include: {
+          user: true,
+          _count: {
+            select: {
+              likes: true,
+              reposts: true,
+            },
+          },
+        },
+      },
       childComments: {
         include: {
           user: true,
@@ -154,7 +227,13 @@ async function getInfiniteComments({
   }
 
   return {
-    comments,
+    comments: comments.map((comment) => {
+      return {
+        ...comment,
+        likedByCurrentUser: comment.likes?.length === 1,
+        repostedByCurrentUser: comment.reposts?.length === 1,
+      };
+    }),
     nextCursor,
   };
 }

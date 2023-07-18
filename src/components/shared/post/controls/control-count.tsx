@@ -31,7 +31,7 @@ const ControlCount = ({ comments, likes, post }: ControlCountProps) => {
     }
   );
 
-  if (!post) return null;
+  // if (!post) return null;
 
   if (isFetching) return <Loading />;
 
@@ -43,13 +43,14 @@ const ControlCount = ({ comments, likes, post }: ControlCountProps) => {
   return (
     <>
       <div className="mt-2 flex items-center gap-2 text-sm">
-        <Link
-          href={`/thread/${post.id}`}
-          className="text-sm font-semibold text-foreground hover:opacity-60"
-        >
-          {comments ?? 0} {comments === 1 ? "reply" : "replies"}
-          {/*{comments ?? 0} comment*/}
-        </Link>
+        {post && (
+          <Link
+            href={`/thread/${post.id}`}
+            className="text-sm font-semibold text-foreground hover:opacity-60"
+          >
+            {comments ?? 0} {comments === 1 ? "reply" : "replies"}
+          </Link>
+        )}
         <span
           className="font-semibold text-foreground hover:opacity-60"
           onClick={() => {

@@ -43,7 +43,7 @@ export default function HomeProfile({
           )}
           <div>
             <h4 className="font-semibold text-foreground">Suggested for you</h4>
-            <ul className="flex flex-col gap-2">
+            <ul className="flex flex-col gap-0.5">
               {recommendedUsers &&
                 recommendedUsers.map((recommendedUser, index) => (
                   <li key={index}>

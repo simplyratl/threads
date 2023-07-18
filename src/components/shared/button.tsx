@@ -13,15 +13,15 @@ const Button = ({
 }: ButtonProps) => {
   const outlineClass =
     variant === "outline"
-      ? "border border-foreground bg-transparent hover:bg-accent hover:bg-opacity-10"
+      ? "border border-border_color bg-transparent hover:bg-accent hover:bg-opacity-10"
       : "border-transparent bg-accent hover:opacity-60";
 
-  const variantClass = ():string => {
+  const variantClass = (): string => {
     if (variant === "default") return "bg-accent";
     if (variant === "minimal")
       return "bg-transparent text-blue-500 font-semibold";
 
-    return ""
+    return "";
   };
 
   const disabledClass = rest.disabled ? "opacity-50" : "";

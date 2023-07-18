@@ -52,11 +52,11 @@ function PostUser({ post, className, disableControlBar }: PostUserProps) {
     <article>
       <Link
         href={`/thread/${post ? post.id : ""}`}
-        className={`disable-tap-highlight group relative flex gap-2.5 border-b border-accent px-3 py-4 hover:bg-transparent sm:pl-4 sm:pr-6 md:hover:bg-accent ${
+        className={`disable-tap-highlight group relative flex gap-2.5 border-b border-border_color px-3 py-4 hover:bg-transparent sm:pl-4 sm:pr-6 md:hover:bg-accent ${
           singlePageReposted && post.repostedByCurrentUser
             ? "py-6 pt-10"
             : "sm:py-6"
-        }`}
+        } ${className ?? ""}`}
       >
         <div className="relative-h-full">
           <div className="relative h-full">

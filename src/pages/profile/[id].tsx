@@ -14,6 +14,7 @@ import { PostWithUser } from "~/components/shared/post/post";
 import ListUsersModal from "~/components/shared/modals/list-users-modal";
 import Comments from "~/components/shared/post/comments/comments";
 import { User } from "@prisma/client";
+import CommentRepliesProfile from "~/components/shared/post/comments/comment-replies-profile";
 
 const tabs = ["Threads", "Replies"];
 
@@ -104,7 +105,7 @@ const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
       <Head>
         <title>Threads | {user?.name}</title>
       </Head>
-      <main className="mx-auto min-h-screen max-w-lg gap-16 px-4 md:ml-[14%] lg:ml-[34%] lg:max-w-2xl lg:p-0">
+      <main className="mx-auto min-h-screen max-w-lg gap-16 px-4 md:ml-[14%] lg:ml-[34%] lg:max-w-xl lg:p-0">
         {/*<main className="mx-auto min-h-screen max-w-lg px-4 md:ml-auto lg:ml-[34%] lg:max-w-4xl lg:p-0">*/}
         <div className="w-full">
           <div className="flex w-full justify-between">
@@ -187,8 +188,8 @@ const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
               <button
                 className={`flex-1 rounded-t border-b py-2 ${
                   activeTab === tab
-                    ? "border-foreground"
-                    : "border-accent hover:bg-accent"
+                    ? "border-border_color"
+                    : "border-border_color hover:bg-accent"
                 }`}
                 onClick={() => handleActiveTab(tab)}
                 key={index}
@@ -208,7 +209,11 @@ const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
               hasMore={postsData.hasNextPage}
             />
           ) : (
-            <Comments comments={comments} commentData={commentsData} />
+            // <Comments comments={comments} commentData={commentsData} />
+            <CommentRepliesProfile
+              comments={comments}
+              commentData={commentsData}
+            />
           )}
         </div>
       </main>

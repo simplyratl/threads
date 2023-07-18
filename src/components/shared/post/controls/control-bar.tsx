@@ -62,7 +62,7 @@ function ControlBar({
 
   const toggleRepost = api.reposts.toggleRepost.useMutation({
     onSuccess: (reposted) => {
-      toast.success(reposted ? "Post reposted!" : "Post un-reposted!");
+      // toast.success(reposted ? "Post reposted!" : "Post un-reposted!");
     },
   });
 

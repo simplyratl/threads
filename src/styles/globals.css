@@ -12,15 +12,17 @@ body{
   --invert-color: invert(0);
 
   --background: 0, 0%, 96%;
-  --foreground: 0, 0%, 10%;
+  --foreground: 0, 0%, 40%;
   --accent: 0, 0%, 84%;
+  --border-color: 0, 0%, 80%;
 }
 
 .dark {
   --invert-color: invert(1);
   --background: 0, 0%, 6%;
-  --foreground: 0, 0%, 60%;
-  --accent: 0, 0%, 18%;
+  --foreground: 0, 0%, 38%;
+  --accent: 0, 0%, 8%;
+  --border-color: 13, 13%, 13%;
 }
 
 .inverted-logo {
@@ -34,4 +36,5 @@ body{
 [data-rmiz-modal-overlay="visible"] {
   background-color: hsla(0,0%,0%, .8) !important; /* Replace with your desired color */
 }
+
 
