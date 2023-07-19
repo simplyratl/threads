@@ -11,8 +11,13 @@ import DisplayMedia from "~/components/shared/post/display-media";
 import PostLine from "~/components/shared/post/post-line";
 import ReplyAvatars from "~/components/shared/post/reply-avatars";
 import { useRouter } from "next/router";
-import { HiOutlineArrowPathRoundedSquare } from "react-icons/hi2";
+import {
+  HiOutlineArrowPathRoundedSquare,
+  HiOutlineLink,
+} from "react-icons/hi2";
 import { useSession } from "next-auth/react";
+import { HiOutlineDotsHorizontal } from "react-icons/hi";
+import toast from "react-hot-toast";
 
 interface PostUserProps {
   post: PostWithUser;
@@ -24,6 +29,9 @@ function PostUser({ post, className, disableControlBar }: PostUserProps) {
   const { data: session } = useSession();
   const router = useRouter();
   const { id: profileId } = router.query;
+
+  const currentURL =
+    typeof window !== "undefined" ? window.location.origin : "";
 
   const [showTimestamp, setShowTimestamp] = useState(false);
   const timeoutRef = useRef<number | null>(null);
@@ -105,40 +113,75 @@ function PostUser({ post, className, disableControlBar }: PostUserProps) {
                 void router.push(`/profile/${post.user.username as string}`);
               }}
               rel="noopener noreferrer"
-              className="flex items-center justify-between sm:justify-start"
+              className="flex items-center justify-between gap-4"
             >
-              <div className="flex items-center">
-                <span className="font-semibold hover:opacity-70">
-                  {post.user.username ?? post.user.name}
-                </span>
-                {post.user.verified && (
-                  <span className="ml-1">
-                    <MdVerified className="text-blue-500" size={18} />
+              <div className="flex w-full items-center justify-between sm:justify-start">
+                <div className="flex items-center">
+                  <span className="font-semibold hover:opacity-70">
+                    {post.user.username ?? post.user.name}
                   </span>
+                  {post.user.verified && (
+                    <span className="ml-1">
+                      <MdVerified className="text-blue-500" size={18} />
+                    </span>
+                  )}
+                </div>
+                {post?.createdAt && (
+                  <>
+                    <div className="ml-2 hidden h-1 w-1 rounded-full bg-foreground sm:block"></div>
+                    <div className="group relative ml-2">
+                      <span
+                        className={`relative font-medium text-foreground hover:opacity-70`}
+                        onMouseEnter={handleMouseEnter}
+                        onMouseLeave={handleMouseLeave}
+                      >
+                        {formatToNowDate(new Date(post?.createdAt))}
+                      </span>
+                      {showTimestamp && (
+                        <div className="absolute left-1/2 top-[calc(100%+4px)] z-40 flex h-full w-[140px] -translate-x-1/2 items-center justify-center rounded bg-[#000] px-2 text-sm font-semibold">
+                          {format(
+                            new Date(post?.createdAt),
+                            "HH:mm - MM/dd/yyyy"
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </>
                 )}
               </div>
-              {post?.createdAt && (
-                <>
-                  <div className="ml-2 hidden h-1 w-1 rounded-full bg-foreground sm:block"></div>
-                  <div className="group relative ml-2">
-                    <span
-                      className={`relative font-medium text-foreground hover:opacity-70`}
-                      onMouseEnter={handleMouseEnter}
-                      onMouseLeave={handleMouseLeave}
-                    >
-                      {formatToNowDate(new Date(post?.createdAt))}
+
+              <div
+                className="min-h-auto dropdown dropdown-end"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+              >
+                <label
+                  tabIndex={0}
+                  className="btn h-7 min-h-full w-7 rounded-full border-none bg-transparent p-0 hover:bg-foreground"
+                >
+                  {" "}
+                  <HiOutlineDotsHorizontal size={24} />
+                </label>
+                <ul
+                  tabIndex={0}
+                  className="shadow- menu dropdown-content rounded-box z-[1] w-52 bg-accent p-2 shadow"
+                >
+                  <li
+                    onClick={() =>
+                      void navigator.clipboard
+                        .writeText(`${currentURL}/thread/${post?.id}`)
+                        .then(() => toast.success("Copied to clipboard."))
+                        .catch(() => toast.error("Failed to copy to clipboard"))
+                    }
+                  >
+                    <span>
+                      Copy link <HiOutlineLink size={18} />
                     </span>
-                    {showTimestamp && (
-                      <div className="absolute left-1/2 top-[calc(100%+4px)] z-40 flex h-full w-[140px] -translate-x-1/2 items-center justify-center rounded bg-[#000] px-2 text-sm font-semibold">
-                        {format(
-                          new Date(post?.createdAt),
-                          "HH:mm - MM/dd/yyyy"
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </>
-              )}
+                  </li>
+                </ul>
+              </div>
             </div>
 
             {post && (

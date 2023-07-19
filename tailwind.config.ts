@@ -3,6 +3,9 @@ import { type Config } from "tailwindcss";
 export default {
   content: ["./src/**/*.{js,ts,jsx,tsx}"],
   darkMode: "class",
+  daisyui: {
+    themes: false,
+  },
   theme: {
     extend: {
       colors: {
@@ -15,5 +18,5 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [require("daisyui")],
 } satisfies Config;

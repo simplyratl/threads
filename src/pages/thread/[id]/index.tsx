@@ -37,13 +37,27 @@ export default function ThreadPage(
     (page) => page.comments
   );
 
+  const currentURL =
+    typeof window !== "undefined" ? window.location.origin : "";
+  const threadTitle = `Thread | ${post?.post.user.name ?? ""} - ${
+    post?.post.content.substring(0, 32) as string
+  }...`;
+  const threadDescription = `${post?.post.user.name ?? ""} - ${
+    post?.post.content.substring(0, 32) as string
+  }...`;
+  const threadImage =
+    (post?.post.mediaType as string) === "image" ? post?.post.media : "";
+
   return (
     <>
       <Head>
-        <title>
-          Thread | {post?.post.user.name ?? ""} -{" "}
-          {post?.post.content.substring(0, 32)}...
-        </title>
+        <title>{threadTitle}</title>
+        <meta title="description" content={threadDescription} />
+        <meta property="og:title" content={threadTitle} />
+        <meta property="og:description" content={threadDescription} />
+        <meta property="og:image" content={threadImage ?? ""} />
+        <meta property="og:url" content={`${currentURL}/thread`} />
+        <meta property="og:type" content="website" />
       </Head>
 
       <main className="mx-auto min-h-screen max-w-2xl px-4 md:ml-20 lg:ml-[34%] lg:p-0">
