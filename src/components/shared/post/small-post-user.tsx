@@ -66,7 +66,7 @@ const SmallPostUser = ({
       <div className="relative-h-full">
         <div className="relative h-full">
           <Link
-            href={`/profile/${id}`}
+            href={`/profile/${username}`}
             rel="noopener noreferrer"
             className="flex gap-2"
           >
@@ -85,7 +85,7 @@ const SmallPostUser = ({
       <div className={`w-full ${centeredText ? "flex items-center" : ""}`}>
         <div className={`flex flex-col ${textSize}`}>
           <Link
-            href={`/profile/${id}`}
+            href={`/profile/${username}`}
             rel="noopener noreferrer"
             className="flex items-center"
           >
