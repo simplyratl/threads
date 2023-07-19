@@ -91,3 +91,18 @@ export default function Home() {
     </>
   );
 }
+
+export const getStaticProps = async (
+  context: GetServerSidePropsContext<{ id: string }>
+) => {
+  const ssg = ssgHelper();
+
+  await ssg.alerts.getAlert.prefetch(undefined);
+
+  return {
+    props: {
+      trpcState: ssg.dehydrate(),
+    },
+    revalidate: 1,
+  };
+};
