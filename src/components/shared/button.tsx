@@ -17,10 +17,11 @@ const Button = ({
       : "border-transparent bg-accent hover:opacity-60";
 
   const variantClass = (): string => {
-    if (variant === "default") return "bg-accent";
+    if (variant === "default") return "bg-button_bg dark:text-black";
     if (variant === "minimal")
       return "bg-transparent text-blue-500 font-semibold";
-    if (variant === "rounded") return "rounded-full bg-accent";
+    if (variant === "rounded")
+      return "rounded-full bg-button_bg dark:text-black";
 
     return "";
   };
@@ -32,7 +33,7 @@ const Button = ({
       type="button"
       className={`${
         variant === "minimal" ? "" : "px-4 py-0.5"
-      } ${variantClass()} ${outlineClass} ${disabledClass} rounded border transition-all ${
+      } ${variantClass()} ${outlineClass} ${disabledClass} rounded border font-semibold transition-all ${
         className ?? ""
       }`}
       {...rest}

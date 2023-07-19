@@ -38,11 +38,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
   }, []);
 
   if (isSessionLoading) {
-    return (
-      <div className="flex h-screen items-center">
-        <Loading />
-      </div>
-    );
+    return <div className="flex h-screen items-center">{/*<Loading />*/}</div>;
   }
 
   return (

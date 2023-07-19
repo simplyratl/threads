@@ -15,6 +15,7 @@ body{
   --foreground: 0, 0%, 40%;
   --accent: 0, 0%, 84%;
   --border-color: 0, 0%, 80%;
+  --button-bg: 0, 0%, 20%;
 }
 
 .dark {
@@ -23,6 +24,7 @@ body{
   --foreground: 0, 0%, 38%;
   --accent: 0, 0%, 8%;
   --border-color: 206, 7%, 21%;
+  --button-bg: 0, 0%, 90%;
 }
 
 .inverted-logo {

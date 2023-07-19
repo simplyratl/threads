@@ -27,13 +27,13 @@ function Posts({ posts, isLoading, hasMore, fetchNewPosts }: PostsProps) {
   if (!posts) return <span> No threads </span>;
 
   return (
-    <section className="-m-4 flex-1 flex-shrink-0 overflow-hidden">
+    <section className="-m-4 flex-1 flex-shrink-0">
       <InfiniteScroll
         dataLength={posts?.length ?? 0}
         next={fetchNewPosts}
         hasMore={hasMore as boolean}
         loader={<Loading />}
-        className="grid !overflow-hidden"
+        className={`grid !overflow-visible`}
         endMessage={
           <span className="mb-4 mt-2 text-center">No more posts</span>
         }

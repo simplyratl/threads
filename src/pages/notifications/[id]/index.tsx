@@ -79,7 +79,8 @@ export default function NotificationsPage({ id }: { id: string }) {
       (type === "like" ||
         type === "reply" ||
         type === "reply_child" ||
-        type === "repost") &&
+        type === "repost" ||
+        type === "mention") &&
       notification.postId
     ) {
       return `/thread/${notification.postId}`;

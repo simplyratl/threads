@@ -63,6 +63,37 @@ export const userRouter = createTRPCRouter({
         currUserFollowing: (user && user?._count.followers > 0) ?? false,
       };
     }),
+  getIfFollowing: protectedProcedure
+    .input(z.object({ username: z.string().nullable() }))
+    .query(async ({ input: { username }, ctx }) => {
+      const currentUserId = ctx.session?.user.id;
+
+      if (!currentUserId) throw new Error("Not logged in");
+      if (!username) return { currUserFollowing: false };
+
+      const user = await ctx.prisma.user.findUnique({
+        where: {
+          username,
+        },
+        include: {
+          followers: {
+            where: {
+              id: currentUserId,
+            },
+          },
+        },
+      });
+
+      const getIfFollowing = () => {
+        if (!user) return false;
+        if (!user.followers) return false;
+
+        return user.followers.length > 0;
+      };
+      return {
+        currUserFollowing: getIfFollowing(),
+      };
+    }),
   getByUsername: publicProcedure
     .input(z.object({ name: z.string() }))
     .query(async ({ input: { name }, ctx }) => {
@@ -79,24 +110,36 @@ export const userRouter = createTRPCRouter({
 
       return {
         ...user,
-        currUserFollowing: (user && user?._count.followers > 0) ?? false,
       };
     }),
   getMentionInfo: publicProcedure
     .input(z.object({ name: z.string() }))
     .mutation(async ({ input: { name }, ctx }) => {
+      const currentUser = ctx.session?.user;
+
       const user = await ctx.prisma.user.findUnique({
         where: {
           username: name,
         },
         include: {
           _count: true,
-          followers: true,
+          followers: currentUser ? { where: { id: currentUser.id } } : false,
           following: true,
         },
       });
 
-      return user;
+      const ifFollowing = () => {
+        if (!currentUser) return false;
+        if (!user) return false;
+        if (!user.followers) return false;
+
+        return user.followers.length > 0;
+      };
+
+      return {
+        ...user,
+        currUserFollowing: ifFollowing(),
+      };
     }),
   getRecommendedUsers: publicProcedure
     .input(z.object({ userId: z.string().optional() }))

@@ -27,11 +27,24 @@ export const notificationsRouter = createTRPCRouter({
         cursor,
       });
     }),
-  // addMentionNotification: protectedProcedure
-  //   .input(z.object({ postId: z.string(), userId: z.string() }))
-  //   .mutation(async ({ input: { postId, userId }, ctx }) => {
-  //
-  //   }
+  addMentionNotification: protectedProcedure
+    .input(z.object({ receiverId: z.string(), postId: z.string() }))
+    .mutation(async ({ input: { receiverId, postId }, ctx }) => {
+      const currUserId = ctx.session?.user.id;
+
+      if (currUserId === undefined) throw new Error("User not found");
+
+      if (currUserId === receiverId) return;
+
+      return ctx.prisma.notification.create({
+        data: {
+          userId: receiverId,
+          senderUserId: currUserId,
+          type: "mention",
+          postId,
+        },
+      });
+    }),
 });
 
 //DYNAMIC INIFINITE NOTIFICATIONS WHERE CLAUSE

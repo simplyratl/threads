@@ -20,7 +20,7 @@ export const postRouter = createTRPCRouter({
     .mutation(
       async ({ input: { content, multimediaURL, multimediaType }, ctx }) => {
         const HOUR_IN_MS = 60 * 60 * 1000;
-        const MAX_THREADS_PER_HOUR = 5;
+        const MAX_THREADS_PER_HOUR = 20;
 
         const userId = ctx.session.user.id;
 
@@ -36,7 +36,7 @@ export const postRouter = createTRPCRouter({
         // Check if the user has exceeded the thread limit
         if (threadsInLastHour >= MAX_THREADS_PER_HOUR) {
           throw new Error(
-            `You have reached the maximum thread limit of ${MAX_THREADS_PER_HOUR} in an hour. Please try again later`
+            `You have reached the maximum thread limit of ${MAX_THREADS_PER_HOUR} in an hour. Please try again later.`
           );
         }
 

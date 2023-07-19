@@ -11,6 +11,7 @@ export default {
         accent: "hsl(var(--accent))",
         background_overlay: "hsla(var(--background), 0.8)",
         border_color: "hsl(var(--border-color))",
+        button_bg: "hsl(var(--button-bg))",
       },
     },
   },

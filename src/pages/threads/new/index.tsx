@@ -1,20 +1,16 @@
 import { useSession } from "next-auth/react";
 import Head from "next/head";
 import React, { useRef, useState } from "react";
-import PostUser from "~/components/shared/post/post-user";
 import { api } from "~/utils/api";
 import toast from "react-hot-toast";
 import Button from "~/components/shared/button";
-import TextareaAutosize from "react-textarea-autosize";
-import { HiPaperClip } from "react-icons/hi2";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { v4 as uuidv4 } from "uuid";
-import ReactPlayer from "react-player";
 import VideoPlayer from "~/components/shared/video-player";
 import SmallPostUser from "~/components/shared/post/small-post-user";
-import Dropdown from "~/components/shared/dropdowns/dropdown";
 import CreateThreadInput from "~/pages/threads/new/components/create-thread-input";
-import { useDebounce } from "use-debounce";
+import { User } from "@prisma/client";
+import post from "~/components/shared/post/post";
 
 const CDNURL =
   "https://wxhaoxtosehvuuitysfj.supabase.co/storage/v1/object/public/multimedia/";
@@ -31,16 +27,20 @@ export default function ThreadsNew() {
   const [content, setContent] = useState<string>("");
 
   const [blockSending, setBlockSending] = useState<boolean>(false);
-
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
+  const [mentionedUsers, setMentionedUsers] = useState<User[]>([]);
 
   const createPost = api.posts.create.useMutation({
     onSuccess: (post) => {
       setContent("");
-      toast.success("Post created");
+      toast.success("Thread created");
       setIsSubmitting(false);
       setFile(null);
       setFilePreview(null);
+      setMentionedUsers([]);
+
+      sendNotificationsUsers(post.id);
     },
     onError: (error) => {
       toast.error(error.message, { id: "post-error" });
@@ -48,8 +48,31 @@ export default function ThreadsNew() {
       setBlockSending(true);
       setFile(null);
       setFilePreview(null);
+      setMentionedUsers([]);
     },
   });
+
+  const sendNotification = api.notifications.addMentionNotification.useMutation(
+    {
+      onSuccess: () => {
+        // toast.success("Notification sent");
+      },
+      onError: (error) => {
+        toast.error(error.message, { id: "notification-error" });
+      },
+    }
+  );
+
+  const sendNotificationsUsers = (postId: string | undefined) => {
+    if (!postId) return;
+    if (mentionedUsers.length === 0) return;
+    for (const user of mentionedUsers) {
+      sendNotification.mutate({
+        receiverId: user.id,
+        postId: postId,
+      });
+    }
+  };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -72,6 +95,7 @@ export default function ThreadsNew() {
       createPost.mutate({
         content,
       });
+
       return;
     }
 
@@ -150,6 +174,8 @@ export default function ThreadsNew() {
               fileInputRef={fileInputRef}
               content={content}
               setContent={setContent}
+              mentionedUsers={mentionedUsers}
+              setMentionedUsers={setMentionedUsers}
             />
 
             <div className="mt-4 flex justify-end">

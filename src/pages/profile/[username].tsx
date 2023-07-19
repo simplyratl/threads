@@ -15,6 +15,7 @@ import ListUsersModal from "~/components/shared/modals/list-users-modal";
 import Comments from "~/components/shared/post/comments/comments";
 import { User } from "@prisma/client";
 import CommentRepliesProfile from "~/components/shared/post/comments/comment-replies-profile";
+import Loading from "~/components/shared/loading";
 
 const tabs = ["Threads", "Replies"];
 
@@ -34,6 +35,16 @@ const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
     {
       staleTime: Infinity,
       refetchOnWindowFocus: false,
+    }
+  );
+
+  const { data: isFollowing } = api.users.getIfFollowing.useQuery(
+    {
+      username: user?.username ?? null,
+    },
+    {
+      refetchOnWindowFocus: false,
+      staleTime: Infinity,
     }
   );
 
@@ -64,7 +75,19 @@ const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
         };
       };
 
+      const updateFollow = (oldData: any) => {
+        if (!oldData) return;
+
+        return {
+          currUserFollowing: follow.addedFollow,
+        };
+      };
+
       trpcUtils.users.getByUsername.setData({ name: username }, updateData);
+      trpcUtils.users.getIfFollowing.setData(
+        { username: user?.username as string },
+        updateFollow
+      );
     },
   });
 
@@ -99,6 +122,17 @@ const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
 
     toggleFollow.mutate({ userId: user?.id as string });
   };
+
+  if (isLoading)
+    return (
+      <div>
+        <main className="mx-auto min-h-screen max-w-lg gap-16 px-4 md:ml-[14%] lg:ml-[34%] lg:max-w-xl lg:p-0">
+          <Loading />
+        </main>
+      </div>
+    );
+
+  console.log(isFollowing);
 
   return (
     <>
@@ -142,13 +176,24 @@ const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                         <span className="block">Logout</span>
                       </Button>
                     </>
-                  ) : (
+                  ) : isFollowing !== undefined ? (
                     <Button
-                      variant={!user?.currUserFollowing ? "outline" : "default"}
+                      variant={
+                        !isFollowing.currUserFollowing ? "outline" : "default"
+                      }
                       onClick={() => handleToggleFollow()}
                       disabled={toggleFollow.isLoading}
                     >
-                      {user && user.currUserFollowing ? "Unfollow" : "Follow"}
+                      {isFollowing.currUserFollowing ? "Unfollow" : "Follow"}
+                    </Button>
+                  ) : (
+                    <Button
+                      variant={"outline"}
+                      onClick={() => handleToggleFollow()}
+                      disabled={toggleFollow.isLoading}
+                      className="text-transparent"
+                    >
+                      Follow
                     </Button>
                   )}
                 </div>
@@ -245,7 +290,7 @@ export const getStaticProps = async (context: any) => {
 
   const ssg = ssgHelper();
 
-  await ssg.users.getByUsername.prefetch({ name: username });
+  await ssg.users.getByUsername.fetch({ name: username });
 
   return {
     props: {

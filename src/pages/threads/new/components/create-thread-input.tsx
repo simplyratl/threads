@@ -15,6 +15,8 @@ interface CreateThreadInputProps {
   fileInputRef: React.RefObject<HTMLInputElement>;
   content: string;
   setContent: React.Dispatch<React.SetStateAction<string>>;
+  setMentionedUsers: React.Dispatch<React.SetStateAction<User[]>>;
+  mentionedUsers: User[];
 }
 
 const CreateThreadInput = ({
@@ -22,6 +24,8 @@ const CreateThreadInput = ({
   content,
   setContent,
   isSubmitting,
+  setMentionedUsers,
+  mentionedUsers,
 }: CreateThreadInputProps) => {
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
   const [mentionText, setMentionText] = useState<string>("");
@@ -105,6 +109,13 @@ const CreateThreadInput = ({
                       type="button"
                       className="flex w-full items-center justify-between px-6 py-2 hover:bg-background"
                       onClick={() => {
+                        const mentionedUser = user;
+
+                        setMentionedUsers((prevMentionedUsers) => [
+                          ...prevMentionedUsers,
+                          mentionedUser,
+                        ]);
+
                         setMentionText("");
                         setContent(
                           `${content.substring(
