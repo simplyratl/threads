@@ -240,7 +240,9 @@ async function getInfinitePosts({
     include: {
       user: true,
       likes: !currentUserId ? false : { where: { userId: currentUserId } },
-      reposts: !currentUserId ? false : { where: { userId: currentUserId } },
+      reposts: !currentUserId
+        ? false
+        : { where: { userId: currentUserId }, orderBy: { createdAt: "asc" } },
       comments: {
         take: 3,
         orderBy: {

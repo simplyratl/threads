@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 // import PostUser from "@/components/ui/post-user";
 import ControlBar from "./controls/control-bar";
-import { Post as PostType, User } from "@prisma/client";
+import { Post as PostType, Repost, User } from "@prisma/client";
 import Link from "next/link";
 // import { Post, User } from "@prisma/client";
 import "react-medium-image-zoom/dist/styles.css";
@@ -27,6 +27,7 @@ export interface PostWithUser extends PostType {
       image: string;
     };
   }[];
+  reposts: Repost[];
   likedByCurrentUser: boolean;
   repostedByCurrentUser: boolean;
 }

@@ -51,18 +51,14 @@ function PostUser({ post, className, disableControlBar }: PostUserProps) {
   const singlePageReposted =
     router.pathname.includes("/profile/") &&
     profileUsername &&
-    session?.user &&
-    session.user.username === (profileUsername as string) && // if on profile page and viewing own profile;
-    post.repostedByCurrentUser;
+    post.user.username !== profileUsername;
 
   return (
     <article>
       <Link
         href={`/thread/${post ? post.id : ""}`}
         className={`disable-tap-highlight group relative flex gap-2.5 border-b border-border_color px-3 py-4 hover:bg-transparent sm:pl-4 sm:pr-6 md:hover:bg-accent ${
-          singlePageReposted && post.repostedByCurrentUser
-            ? "py-6 pt-10"
-            : "sm:py-6"
+          singlePageReposted ? "py-6 pt-10" : "sm:py-6"
         } ${className ?? ""}`}
       >
         <div className="relative-h-full">

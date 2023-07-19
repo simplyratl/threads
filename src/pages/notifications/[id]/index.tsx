@@ -7,8 +7,6 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import Loading from "~/components/shared/loading";
 import { api } from "~/utils/api";
 import { formatToNowDate } from "~/utils/formatToNowDate";
-import { GetServerSideProps } from "next";
-import { getServerAuthSession } from "~/server/auth";
 import { ssgHelper } from "~/utils/ssg";
 
 interface NotificationWithUser extends Notification {
@@ -74,7 +72,7 @@ export default function NotificationsPage({ id }: { id: string }) {
     const { type } = notification;
 
     if (type === "follow") {
-      return `/profile/${notification.sender.username}`;
+      return `/profile/${notification.sender.username as string}`;
     } else if (
       (type === "like" ||
         type === "reply" ||
