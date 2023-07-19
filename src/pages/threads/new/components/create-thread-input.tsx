@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import TextareaAutosize from "react-textarea-autosize";
-import Button from "~/components/shared/button";
+import Button from "~/components/shared/ui/button";
 import { HiPaperClip } from "react-icons/hi2";
 import Dropdown, {
   RenderListDropdown,

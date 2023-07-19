@@ -10,7 +10,7 @@ import { useRouter } from "next/router";
 import { useDebounce } from "use-debounce";
 import { api } from "~/utils/api";
 import Image from "next/image";
-import Button from "~/components/shared/button";
+import Button from "~/components/shared/ui/button";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "react-hot-toast";
 import { useSession } from "next-auth/react";

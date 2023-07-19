@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Modal from "~/components/modals/modal";
 import { Session } from "next-auth";
 import { useSession } from "next-auth/react";
-import Button from "~/components/shared/button";
+import Button from "~/components/shared/ui/button";
 import { api } from "~/utils/api";
 import toast from "react-hot-toast";
 import { useRouter } from "next/router";

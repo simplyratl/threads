@@ -15,6 +15,7 @@ body{
   --foreground: 0, 0%, 40%;
   --accent: 0, 0%, 84%;
   --border-color: 0, 0%, 80%;
+  --secondary: 0, 0%, 40%;
   --button-bg: 0, 0%, 20%;
 }
 
@@ -24,6 +25,7 @@ body{
   --foreground: 0, 0%, 38%;
   --accent: 0, 0%, 8%;
   --border-color: 206, 7%, 21%;
+  --secondary: 0, 0%, 12%;
   --button-bg: 0, 0%, 90%;
 }
 
@@ -45,4 +47,8 @@ body{
 
 video{
   max-height: 560px;
+}
+
+.minimal-dropdown-ul li{
+  @apply flex items-center gap-1 rounded px-2 py-1 hover:bg-foreground
 }

@@ -12,7 +12,7 @@ import {
 import TextareaAutosize from "react-textarea-autosize";
 import Modal from "~/components/modals/modal";
 import { api } from "~/utils/api";
-import Button from "../../button";
+import Button from "../../ui/button";
 import PostUserComment from "../comments/post-user-comment";
 import { CommentWithChildren } from "~/components/shared/post/comments/comments";
 import AddCommentModal from "~/components/shared/modals/add-comment-modal";

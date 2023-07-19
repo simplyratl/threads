@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { HiXMark } from "react-icons/hi2";
-import Button from "../shared/button";
+import Button from "../shared/ui/button";
 import { AnimatePresence, motion } from "framer-motion";
 import { createPortal } from "react-dom";
 

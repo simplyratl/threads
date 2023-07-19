@@ -3,7 +3,7 @@ import Head from "next/head";
 import React, { useEffect, useRef, useState } from "react";
 import { api } from "~/utils/api";
 import toast from "react-hot-toast";
-import Button from "~/components/shared/button";
+import Button from "~/components/shared/ui/button";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { v4 as uuidv4 } from "uuid";
 import VideoPlayer from "~/components/shared/video-player";

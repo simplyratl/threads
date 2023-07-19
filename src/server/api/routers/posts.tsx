@@ -20,7 +20,7 @@ export const postRouter = createTRPCRouter({
     .mutation(
       async ({ input: { content, multimediaURL, multimediaType }, ctx }) => {
         const HOUR_IN_MS = 60 * 60 * 1000;
-        const MAX_THREADS_PER_HOUR = 20;
+        const MAX_THREADS_PER_HOUR = 5;
 
         const userId = ctx.session.user.id;
 

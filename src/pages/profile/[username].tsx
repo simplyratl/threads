@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { MdVerified } from "react-icons/md";
-import Button from "~/components/shared/button";
+import Button from "~/components/shared/ui/button";
 import Posts from "~/components/shared/post/posts";
 import { api } from "~/utils/api";
 import { ssgHelper } from "~/utils/ssg";

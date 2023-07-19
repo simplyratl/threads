@@ -3,21 +3,20 @@ import Image from "next/image";
 import Link from "next/link";
 import { MdVerified } from "react-icons/md";
 import { formatToNowDate } from "~/utils/formatToNowDate";
-import React, { useState, useRef } from "react";
-import ControlBarComment from "~/components/shared/post/controls/control-bar-comments";
+import React, { useRef, useState } from "react";
 import Post, { PostWithUser } from "~/components/shared/post/post";
-import ControlBar from "~/components/shared/post/controls/control-bar";
-import DisplayMedia from "~/components/shared/post/display-media";
 import PostLine from "~/components/shared/post/post-line";
 import ReplyAvatars from "~/components/shared/post/reply-avatars";
 import { useRouter } from "next/router";
 import {
+  HiLink,
   HiOutlineArrowPathRoundedSquare,
   HiOutlineLink,
 } from "react-icons/hi2";
 import { useSession } from "next-auth/react";
 import { HiOutlineDotsHorizontal } from "react-icons/hi";
 import toast from "react-hot-toast";
+import MinimalDropdown from "~/components/shared/ui/minimal-dropdown";
 
 interface PostUserProps {
   post: PostWithUser;
@@ -150,38 +149,18 @@ function PostUser({ post, className, disableControlBar }: PostUserProps) {
                 )}
               </div>
 
-              <div
-                className="min-h-auto dropdown dropdown-end"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                }}
-              >
-                <label
-                  tabIndex={0}
-                  className="btn h-7 min-h-full w-7 rounded-full border-none bg-transparent p-0 hover:bg-foreground"
+              <MinimalDropdown>
+                <li
+                  onClick={() => {
+                    void navigator.clipboard
+                      .writeText(`${currentURL}/thread/${post?.id}`)
+                      .then(() => toast.success("Copied to clipboard."))
+                      .catch(() => toast.error("Failed to copy to clipboard"));
+                  }}
                 >
-                  {" "}
-                  <HiOutlineDotsHorizontal size={24} />
-                </label>
-                <ul
-                  tabIndex={0}
-                  className="shadow- menu dropdown-content rounded-box z-[1] w-52 bg-accent p-2 shadow"
-                >
-                  <li
-                    onClick={() =>
-                      void navigator.clipboard
-                        .writeText(`${currentURL}/thread/${post?.id}`)
-                        .then(() => toast.success("Copied to clipboard."))
-                        .catch(() => toast.error("Failed to copy to clipboard"))
-                    }
-                  >
-                    <span>
-                      Copy link <HiOutlineLink size={18} />
-                    </span>
-                  </li>
-                </ul>
-              </div>
+                  <HiLink size={17} /> Copy link
+                </li>
+              </MinimalDropdown>
             </div>
 
             {post && (

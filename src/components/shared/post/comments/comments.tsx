@@ -2,7 +2,7 @@ import { Comment, Post, User } from "@prisma/client";
 import React, { useState } from "react";
 import { toast } from "react-hot-toast";
 import { api } from "~/utils/api";
-import Button from "../../button";
+import Button from "../../ui/button";
 import PostUserComment from "./post-user-comment";
 import Loading from "~/components/shared/loading";
 import InfiniteScroll from "react-infinite-scroll-component";

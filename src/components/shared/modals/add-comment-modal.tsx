@@ -1,7 +1,7 @@
 import React from "react";
 import PostUserComment from "~/components/shared/post/comments/post-user-comment";
 import TextareaAutosize from "react-textarea-autosize";
-import Button from "~/components/shared/button";
+import Button from "~/components/shared/ui/button";
 import Modal from "~/components/modals/modal";
 import { Comment as CommentType } from ".prisma/client";
 import { User } from "@prisma/client";
