@@ -5,6 +5,7 @@ import { PostWithUser } from "~/components/shared/post/post";
 import { CommentWithChildren } from "~/components/shared/post/comments/comments";
 import Link from "next/link";
 import Loading from "~/components/shared/loading";
+import { useRouter } from "next/router";
 
 interface ControlCountProps {
   likes: number;
@@ -14,6 +15,8 @@ interface ControlCountProps {
 }
 
 const ControlCount = ({ comments, likes, post }: ControlCountProps) => {
+  const router = useRouter();
+
   const [showModal, setShowModal] = useState(false);
 
   const {
@@ -44,12 +47,16 @@ const ControlCount = ({ comments, likes, post }: ControlCountProps) => {
     <>
       <div className="mt-2 flex items-center gap-2 text-sm">
         {post && (
-          <Link
-            href={`/thread/${post.id}`}
+          <div
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              void router.push(`/thread/${post.id}`);
+            }}
             className="text-sm font-semibold text-foreground hover:opacity-60"
           >
             {comments ?? 0} {comments === 1 ? "reply" : "replies"}
-          </Link>
+          </div>
         )}
         <span
           className="font-semibold text-foreground hover:opacity-60"

@@ -2,7 +2,7 @@ import React from "react";
 
 type ButtonProps = {
   children: React.ReactNode;
-  variant?: "default" | "minimal" | "outline";
+  variant?: "default" | "minimal" | "outline" | "rounded";
 } & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 const Button = ({
@@ -20,6 +20,7 @@ const Button = ({
     if (variant === "default") return "bg-accent";
     if (variant === "minimal")
       return "bg-transparent text-blue-500 font-semibold";
+    if (variant === "rounded") return "rounded-full bg-accent";
 
     return "";
   };
@@ -29,7 +30,9 @@ const Button = ({
   return (
     <button
       type="button"
-      className={`px-4 py-0.5 ${variantClass()} ${outlineClass} ${disabledClass} rounded border transition-all ${
+      className={`${
+        variant === "minimal" ? "" : "px-4 py-0.5"
+      } ${variantClass()} ${outlineClass} ${disabledClass} rounded border transition-all ${
         className ?? ""
       }`}
       {...rest}

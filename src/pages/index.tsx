@@ -9,12 +9,13 @@ import AlertTopBar from "~/components/shared/alert-top-bar";
 import { createServerSideHelpers } from "@trpc/react-query/server";
 import { appRouter } from "~/server/api/root";
 import superjson from "superjson";
-import { GetServerSidePropsContext } from "next";
+import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { getSession, useSession } from "next-auth/react";
 import { getPrismaClient } from "@prisma/client/runtime";
 import { prisma } from "~/server/db";
 import { ssgHelper } from "~/utils/ssg";
 import { getServerAuthSession } from "~/server/auth";
+import AddUsernameModal from "~/components/modals/add-username-modal";
 
 export default function Home() {
   const { data: session } = useSession();
@@ -90,18 +91,3 @@ export default function Home() {
     </>
   );
 }
-
-export const getStaticProps = async (context: GetServerSidePropsContext) => {
-  const ssg = ssgHelper();
-  await ssg.alerts.getAlert.fetch();
-
-  await ssg.users.getRecommendedUsers.prefetch({});
-  // await ssg.posts.infinitePosts.prefetchInfinite({});
-
-  return {
-    props: {
-      trpcState: ssg.dehydrate(),
-    },
-    revalidate: 1,
-  };
-};

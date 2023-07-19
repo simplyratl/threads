@@ -22,7 +22,7 @@ body{
   --background: 0, 0%, 6%;
   --foreground: 0, 0%, 38%;
   --accent: 0, 0%, 8%;
-  --border-color: 13, 13%, 13%;
+  --border-color: 206, 7%, 21%;
 }
 
 .inverted-logo {
@@ -37,4 +37,6 @@ body{
   background-color: hsla(0,0%,0%, .8) !important; /* Replace with your desired color */
 }
 
-
+.mention-text {
+  color: var(--accent);
+}

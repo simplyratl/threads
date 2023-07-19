@@ -27,6 +27,11 @@ export const notificationsRouter = createTRPCRouter({
         cursor,
       });
     }),
+  // addMentionNotification: protectedProcedure
+  //   .input(z.object({ postId: z.string(), userId: z.string() }))
+  //   .mutation(async ({ input: { postId, userId }, ctx }) => {
+  //
+  //   }
 });
 
 //DYNAMIC INIFINITE NOTIFICATIONS WHERE CLAUSE

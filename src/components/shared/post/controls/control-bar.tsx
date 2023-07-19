@@ -1,17 +1,9 @@
-import { Post } from "@prisma/client";
-import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
-import { useState, useLayoutEffect, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import {
-  AiFillHeart,
-  AiOutlineHeart,
-  AiOutlineMessage,
-  AiOutlineSend,
-} from "react-icons/ai";
 import { api } from "~/utils/api";
 import AddCommentModal from "~/components/shared/modals/add-comment-modal";
-import post, { PostWithUser } from "~/components/shared/post/post";
+import { PostWithUser } from "~/components/shared/post/post";
 import ControlCount from "~/components/shared/post/controls/control-count";
 import ControlButtons from "~/components/shared/post/controls/control-buttons";
 
@@ -215,10 +207,54 @@ function ControlBar({
         };
       };
 
+      const updatePostData = (oldData: any) => {
+        if (!oldData) return;
+
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page: any) => ({
+            ...page,
+            posts: page.posts.map((post: any) => {
+              if (post.id === postId) {
+                return {
+                  ...post,
+                  _count: {
+                    ...post._count,
+                    comments: post._count.comments + 1,
+                  },
+                };
+              }
+
+              return post;
+            }),
+          })),
+        };
+      };
+
+      const updateSinglePost = (oldData: any) => {
+        if (!oldData) return;
+
+        const post = oldData.post;
+
+        return {
+          ...oldData,
+          post: {
+            ...post,
+            _count: {
+              ...post._count,
+              comments: post._count.comments + 1,
+            },
+          },
+        };
+      };
+
       trpcUtils.comments.getCommentsByPost.setInfiniteData(
         { postId },
         updateData
       );
+
+      trpcUtils.posts.infinitePosts.setInfiniteData({}, updatePostData);
+      trpcUtils.posts.getByID.setData({ id: postId }, updateSinglePost);
     },
   });
 

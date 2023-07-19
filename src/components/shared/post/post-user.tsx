@@ -60,8 +60,12 @@ function PostUser({ post, className, disableControlBar }: PostUserProps) {
       >
         <div className="relative-h-full">
           <div className="relative h-full">
-            <Link
-              href={`/profile/${post.user.id}`}
+            <div
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                void router.push(`/profile/${post.user.username as string}`);
+              }}
               rel="noopener noreferrer"
               className="flex gap-2"
             >
@@ -73,7 +77,7 @@ function PostUser({ post, className, disableControlBar }: PostUserProps) {
                   className="!relative h-full w-full object-cover"
                 />
               </div>
-            </Link>
+            </div>
             {displayThreadLine && (
               <>
                 <PostLine />
@@ -94,25 +98,31 @@ function PostUser({ post, className, disableControlBar }: PostUserProps) {
           )}
 
           <div className={`flex flex-col text-base`}>
-            <Link
-              href={`/profile/${post.user.id}`}
+            <div
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                void router.push(`/profile/${post.user.username as string}`);
+              }}
               rel="noopener noreferrer"
-              className="flex items-center"
+              className="flex items-center justify-between sm:justify-start"
             >
-              <span className="font-semibold hover:opacity-70">
-                {post.user.name}
-              </span>
-              {post.user.verified && (
-                <span className="ml-1">
-                  <MdVerified className="text-blue-500" size={18} />
+              <div className="flex items-center">
+                <span className="font-semibold hover:opacity-70">
+                  {post.user.username ?? post.user.name}
                 </span>
-              )}
+                {post.user.verified && (
+                  <span className="ml-1">
+                    <MdVerified className="text-blue-500" size={18} />
+                  </span>
+                )}
+              </div>
               {post?.createdAt && (
                 <>
-                  <div className="ml-2 h-1 w-1 rounded-full bg-neutral-500 dark:bg-neutral-300"></div>
+                  <div className="ml-2 hidden h-1 w-1 rounded-full bg-foreground sm:block"></div>
                   <div className="group relative ml-2">
                     <span
-                      className={`relative font-semibold text-foreground hover:opacity-70`}
+                      className={`relative font-medium text-foreground hover:opacity-70`}
                       onMouseEnter={handleMouseEnter}
                       onMouseLeave={handleMouseLeave}
                     >
@@ -129,7 +139,7 @@ function PostUser({ post, className, disableControlBar }: PostUserProps) {
                   </div>
                 </>
               )}
-            </Link>
+            </div>
 
             {post && (
               <Post

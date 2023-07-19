@@ -12,6 +12,9 @@ import { v4 as uuidv4 } from "uuid";
 import ReactPlayer from "react-player";
 import VideoPlayer from "~/components/shared/video-player";
 import SmallPostUser from "~/components/shared/post/small-post-user";
+import Dropdown from "~/components/shared/dropdowns/dropdown";
+import CreateThreadInput from "~/pages/threads/new/components/create-thread-input";
+import { useDebounce } from "use-debounce";
 
 const CDNURL =
   "https://wxhaoxtosehvuuitysfj.supabase.co/storage/v1/object/public/multimedia/";
@@ -136,33 +139,18 @@ export default function ThreadsNew() {
               <SmallPostUser
                 id={session?.user.id}
                 avatar={session.user.image as string}
-                username={session.user.name as string}
+                username={
+                  session.user.username ?? (session.user.name as string)
+                }
               />
             )}
-            <div className="mt-8">
-              <TextareaAutosize
-                className="w-full resize-none rounded border border-border_color bg-transparent px-4 py-3 outline-none focus:ring-2 focus:ring-foreground"
-                placeholder="Start a thread..."
-                value={content}
-                disabled={isSubmitting}
-                onChange={(event) => setContent(event.target.value)}
-                maxLength={500}
-              />
 
-              <div className="mt-1 flex items-center justify-between">
-                <Button
-                  variant="minimal"
-                  className="!p-0 text-black dark:text-white"
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  <HiPaperClip size={24} />
-                </Button>
-
-                <span className="text-sm font-semibold text-foreground">
-                  {content.length}/500
-                </span>
-              </div>
-            </div>
+            <CreateThreadInput
+              isSubmitting={isSubmitting}
+              fileInputRef={fileInputRef}
+              content={content}
+              setContent={setContent}
+            />
 
             <div className="mt-4 flex justify-end">
               <Button disabled={isSubmitting} type="submit">

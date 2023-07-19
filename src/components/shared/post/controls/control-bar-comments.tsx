@@ -217,8 +217,6 @@ function ControlBarComment({
     const updateData = (oldData: any) => {
       if (!oldData) return;
 
-      console.log(oldData);
-
       const countModifier = !repostedByCurrentUserState ? 1 : -1;
 
       return {

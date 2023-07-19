@@ -1,5 +1,5 @@
 import { type InferGetStaticPropsType, type NextPage } from "next";
-import { signOut, useSession } from "next-auth/react";
+import { getSession, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -19,7 +19,7 @@ import CommentRepliesProfile from "~/components/shared/post/comments/comment-rep
 const tabs = ["Threads", "Replies"];
 
 const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
-  id,
+  username,
 }) => {
   const [activeTab, setActiveTab] = useState(tabs[0]);
   const [showModal, setShowModal] = useState(false);
@@ -29,8 +29,8 @@ const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
     if (!showModal) setSelectedModal("");
   }, [showModal]);
 
-  const { data: user, isLoading } = api.users.getByID.useQuery(
-    { id },
+  const { data: user, isLoading } = api.users.getByUsername.useQuery(
+    { name: username },
     {
       staleTime: Infinity,
       refetchOnWindowFocus: false,
@@ -64,7 +64,7 @@ const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
         };
       };
 
-      trpcUtils.users.getByID.setData({ id }, updateData);
+      trpcUtils.users.getByUsername.setData({ name: username }, updateData);
     },
   });
 
@@ -120,7 +120,9 @@ const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                   )}
                 </h2>
                 <h3 className="text-foreground">
-                  {user?.name?.replace(" ", ".").toLowerCase()}
+                  @
+                  {user?.username ??
+                    user?.name?.replace(" ", ".").toLowerCase()}
                 </h3>
               </div>
 
@@ -231,9 +233,9 @@ const ProfilePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
 };
 
 export const getStaticProps = async (context: any) => {
-  const id = context.params?.id;
+  const username = context.params?.username;
 
-  if (id === null) {
+  if (username === null) {
     return {
       redirect: {
         destination: "/",
@@ -243,11 +245,11 @@ export const getStaticProps = async (context: any) => {
 
   const ssg = ssgHelper();
 
-  await ssg.users.getByID.prefetch({ id });
+  await ssg.users.getByUsername.prefetch({ name: username });
 
   return {
     props: {
-      id,
+      username,
       trpcState: ssg.dehydrate(),
     },
   };

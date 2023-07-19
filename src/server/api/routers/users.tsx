@@ -9,6 +9,17 @@ import { Prisma } from "@prisma/client";
 import { inferAsyncReturnType } from "@trpc/server";
 
 export const userRouter = createTRPCRouter({
+  checkIfUsernameTaken: publicProcedure
+    .input(z.object({ username: z.string() }))
+    .mutation(async ({ input: { username }, ctx }) => {
+      const user = await ctx.prisma.user.findFirst({
+        where: {
+          username,
+        },
+      });
+
+      return { taken: !!user };
+    }),
   getIfVerified: publicProcedure
     .input(z.object({ username: z.string() }))
     .query(async ({ input: { username }, ctx }) => {
@@ -16,7 +27,17 @@ export const userRouter = createTRPCRouter({
 
       const verified = await ctx.prisma.user.findFirst({
         where: {
-          name: username,
+          username: {
+            not: null,
+          },
+          OR: [
+            {
+              username,
+            },
+            {
+              name: username,
+            },
+          ],
         },
         select: { verified: true },
       });
@@ -42,10 +63,54 @@ export const userRouter = createTRPCRouter({
         currUserFollowing: (user && user?._count.followers > 0) ?? false,
       };
     }),
+  getByUsername: publicProcedure
+    .input(z.object({ name: z.string() }))
+    .query(async ({ input: { name }, ctx }) => {
+      const user = await ctx.prisma.user.findUnique({
+        where: {
+          username: name,
+        },
+        include: {
+          _count: true,
+          followers: true,
+          following: true,
+        },
+      });
+
+      return {
+        ...user,
+        currUserFollowing: (user && user?._count.followers > 0) ?? false,
+      };
+    }),
+  getMentionInfo: publicProcedure
+    .input(z.object({ name: z.string() }))
+    .mutation(async ({ input: { name }, ctx }) => {
+      const user = await ctx.prisma.user.findUnique({
+        where: {
+          username: name,
+        },
+        include: {
+          _count: true,
+          followers: true,
+          following: true,
+        },
+      });
+
+      return user;
+    }),
   getRecommendedUsers: publicProcedure
     .input(z.object({ userId: z.string().optional() }))
     .query(async ({ input: { userId }, ctx }) => {
-      const whereClause = userId ? { NOT: { id: userId } } : {};
+      const whereClause = userId
+        ? {
+            NOT: { id: userId },
+            AND: {
+              username: {
+                not: null,
+              },
+            },
+          }
+        : {};
 
       const recommendedUsers = await ctx.prisma.user.findMany({
         take: 5,
@@ -117,10 +182,23 @@ export const userRouter = createTRPCRouter({
     .query(async ({ input: { search }, ctx }) => {
       const users = await ctx.prisma.user.findMany({
         where: {
-          name: {
-            contains: search,
-            mode: "insensitive",
+          username: {
+            not: null,
           },
+          OR: [
+            {
+              username: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              name: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+          ],
         },
       });
 
@@ -131,6 +209,9 @@ export const userRouter = createTRPCRouter({
     .query(async ({ input: { userId }, ctx }) => {
       const followers = await ctx.prisma.user.findMany({
         where: {
+          username: {
+            not: null,
+          },
           followers: {
             some: {
               id: userId,
@@ -146,6 +227,9 @@ export const userRouter = createTRPCRouter({
     .query(async ({ input: { userId }, ctx }) => {
       const following = await ctx.prisma.user.findMany({
         where: {
+          username: {
+            not: null,
+          },
           following: {
             some: {
               id: userId,
@@ -175,6 +259,24 @@ export const userRouter = createTRPCRouter({
       });
 
       return users;
+    }),
+  changeUsername: protectedProcedure
+    .input(z.object({ username: z.string() }))
+    .mutation(async ({ input: { username }, ctx }) => {
+      const currentUserID = ctx.session?.user.id;
+
+      if (!currentUserID) throw new Error("No user ID found");
+
+      const user = await ctx.prisma.user.update({
+        where: {
+          id: ctx.session?.user.id,
+        },
+        data: {
+          username: username,
+        },
+      });
+
+      return user;
     }),
 });
 

@@ -9,9 +9,16 @@ interface ModalProps {
   setShow: React.Dispatch<React.SetStateAction<boolean>>;
   children: React.ReactNode;
   title: string;
+  disableHideModal?: boolean;
 }
 
-const Modal = ({ setShow, show, children, title }: ModalProps) => {
+const Modal = ({
+  setShow,
+  show,
+  children,
+  title,
+  disableHideModal = false,
+}: ModalProps) => {
   const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
@@ -68,7 +75,7 @@ const Modal = ({ setShow, show, children, title }: ModalProps) => {
 
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setShow(false);
+      if (event.key === "Escape") !disableHideModal && setShow(false);
     };
 
     if (show) {
@@ -90,7 +97,7 @@ const Modal = ({ setShow, show, children, title }: ModalProps) => {
         contentRef.current &&
         !contentRef.current.contains(event.target as Node)
       ) {
-        setShow(false);
+        !disableHideModal && setShow(false);
       }
     };
 
@@ -115,7 +122,7 @@ const Modal = ({ setShow, show, children, title }: ModalProps) => {
           initial={animationVariantOverlay.initial}
           animate={animationVariantOverlay.animate}
           exit={animationVariantOverlay.exit}
-          className="fixed inset-0 z-50 flex justify-center bg-background_overlay"
+          className="fixed inset-0 z-[999] flex justify-center bg-background_overlay"
         >
           <motion.div
             variants={animationVariantContent}
@@ -128,13 +135,15 @@ const Modal = ({ setShow, show, children, title }: ModalProps) => {
           >
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-semibold">{title}</h2>
-              <Button
-                variant="outline"
-                className="m-0 flex h-7 w-7 flex-shrink-0 items-center justify-center !p-0"
-                onClick={() => setShow(false)}
-              >
-                <HiXMark size={18} />
-              </Button>
+              {!disableHideModal && (
+                <Button
+                  variant="outline"
+                  className="m-0 flex h-7 w-7 flex-shrink-0 items-center justify-center !p-0"
+                  onClick={() => !disableHideModal && setShow(false)}
+                >
+                  <HiXMark size={18} />
+                </Button>
+              )}
             </div>
 
             <div className="mt-4">{children}</div>

@@ -51,7 +51,7 @@ function Navbar() {
     },
     {
       name: "Profile",
-      href: `/profile/${session?.user.id as string}`,
+      href: `/profile/${session?.user.username as string}`,
       icon: displayProfileImage(),
       activeIcon: displayProfileImage(),
       private: true,

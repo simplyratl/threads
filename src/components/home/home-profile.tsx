@@ -33,7 +33,7 @@ export default function HomeProfile({
             <div className="mb-2">
               <SmallPostUser
                 id={user.id}
-                username={user.name as string}
+                username={user.username ?? (user.name as string)}
                 avatar={user.image as string}
                 verified={user?.verified}
                 big
@@ -50,7 +50,12 @@ export default function HomeProfile({
                     <SmallPostUser
                       id={recommendedUser.id}
                       avatar={recommendedUser.image as string}
-                      username={recommendedUser.name as string}
+                      username={
+                        recommendedUser
+                          ? (recommendedUser.username as string) ??
+                            (recommendedUser.name as string)
+                          : "unknown"
+                      }
                       verified={recommendedUser.verified}
                       centeredText
                     />

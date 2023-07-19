@@ -34,7 +34,7 @@ const ListUsersModal = ({
             <li key={user.id}>
               <SmallPostUser
                 id={user.id}
-                username={user.name as string}
+                username={(user.username as string) ?? (user.name as string)}
                 avatar={user.image as string}
                 big
                 centeredText

@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { MdVerified } from "react-icons/md";
 import { formatToNowDate } from "~/utils/formatToNowDate";
-import { useState, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { User, Comment as CommentType } from "@prisma/client";
 import ControlBarComment from "../controls/control-bar-comments";
 import PostLine from "~/components/shared/post/post-line";
@@ -39,7 +39,7 @@ function PostUserComment({
       <div className="relative-h-full">
         <div className="relative h-full">
           <Link
-            href={`/profile/${user.id}`}
+            href={`/profile/${user.username as string}`}
             rel="noopener noreferrer"
             className="flex gap-2"
           >
@@ -56,27 +56,29 @@ function PostUserComment({
         </div>
       </div>
 
-      <div>
-        <div className={`flex flex-col`}>
+      <div className="w-full">
+        <div className={`flex w-full flex-col`}>
           <Link
-            href={`/profile/${user.id}`}
+            href={`/profile/${user.username as string}`}
             rel="noopener noreferrer"
-            className="flex items-center"
+            className="flex items-center justify-between sm:justify-start"
           >
-            <span className="text-sm font-semibold hover:opacity-70">
-              {comment.user.name}
-            </span>
-            {comment.user.verified && (
-              <span className="ml-1">
-                <MdVerified className="text-blue-500" size={18} />
+            <div className="flex items-center">
+              <span className="font-semibold hover:opacity-70">
+                {comment.user.name}
               </span>
-            )}
+              {comment.user.verified && (
+                <span className="ml-1">
+                  <MdVerified className="text-blue-500" size={18} />
+                </span>
+              )}
+            </div>
             {comment.createdAt && (
               <>
-                <div className="ml-2 h-1 w-1 rounded-full bg-neutral-500 dark:bg-neutral-300"></div>
+                <div className="ml-2 hidden h-1 w-1 rounded-full bg-foreground sm:block"></div>
                 <div className="group relative ml-2">
                   <span
-                    className={`relative text-sm font-semibold text-foreground hover:opacity-70`}
+                    className={`relative text-sm font-medium text-foreground hover:opacity-70`}
                   >
                     {formatToNowDate(new Date(comment.createdAt))}
                   </span>

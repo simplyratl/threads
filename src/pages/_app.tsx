@@ -1,5 +1,5 @@
 import { type Session } from "next-auth";
-import { SessionProvider } from "next-auth/react";
+import { getSession, SessionProvider } from "next-auth/react";
 import { type AppType } from "next/app";
 import { api } from "~/utils/api";
 import "~/styles/globals.css";
@@ -7,18 +7,21 @@ import Providers from "~/components/providers";
 import Navbar from "~/components/shared/navbar";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { getServerAuthSession } from "~/server/auth";
 
 import "react-loading-skeleton/dist/skeleton.css";
-import { GetServerSideProps } from "next";
 import Head from "next/head";
+import { GetServerSideProps } from "next";
+import AddUsernameModal from "~/components/modals/add-username-modal";
+import { useSessionData } from "~/hooks/useSessionData";
+import Loading from "~/components/shared/loading";
+import { getServerAuthSession } from "~/server/auth";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
-  pageProps: { session, ...pageProps },
+  pageProps,
 }) => {
   const router = useRouter();
-  const [isSessionLoading, setIsSessionLoading] = useState(true);
+  const { session, isSessionLoading } = useSessionData();
 
   useEffect(() => {
     const handleRouteChange = () => {
@@ -34,11 +37,13 @@ const MyApp: AppType<{ session: Session | null }> = ({
     };
   }, []);
 
-  useEffect(() => {
-    if (session?.user !== null) {
-      setIsSessionLoading(false);
-    }
-  }, [session]);
+  if (isSessionLoading) {
+    return (
+      <div className="flex h-screen items-center">
+        <Loading />
+      </div>
+    );
+  }
 
   return (
     <>
@@ -88,20 +93,17 @@ const MyApp: AppType<{ session: Session | null }> = ({
       </Head>
       <SessionProvider session={session}>
         <Providers>
-          {isSessionLoading ? (
-            // Show a loading indicator, you can customize this part as you like
-            <div className="flex h-screen items-center"></div>
-          ) : (
-            <>
-              <div id="modal">
-                <div id="modal-root"></div>
-              </div>
-              <Navbar />
-              <div className="bg-background pb-20 pt-8 md:pb-0">
-                <Component {...pageProps} />
-              </div>
-            </>
-          )}
+          <>
+            <AddUsernameModal />
+
+            <div id="modal">
+              <div id="modal-root"></div>
+            </div>
+            <Navbar />
+            <div className="bg-background pb-20 pt-8 md:pb-0">
+              <Component {...pageProps} />
+            </div>
+          </>
         </Providers>
       </SessionProvider>
     </>

@@ -9,6 +9,7 @@ import {
 import { CommentWithChildren } from "~/components/shared/post/comments/comments";
 import { PostWithUser } from "~/components/shared/post/post";
 import { HiOutlineArrowPathRoundedSquare } from "react-icons/hi2";
+import { useRouter } from "next/router";
 
 interface ControlButtonsProps {
   toggleLike: any;

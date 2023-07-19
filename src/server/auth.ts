@@ -23,15 +23,16 @@ declare module "next-auth" {
     user: {
       id: string;
       verified: boolean;
+      username: string;
       // ...other properties
       // role: UserRole;
     } & DefaultSession["user"];
   }
 
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
+  interface User {
+    verified: boolean;
+    username: string;
+  }
 }
 
 /**
@@ -46,7 +47,8 @@ export const authOptions: NextAuthOptions = {
       user: {
         ...session.user,
         id: user.id,
-        verified: session.user?.verified ?? false,
+        verified: user.verified ?? false,
+        username: user.username ?? null,
       },
     }),
   },
