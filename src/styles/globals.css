@@ -42,3 +42,7 @@ body{
 .mention-text {
   color: var(--accent);
 }
+
+video{
+  max-height: 560px;
+}

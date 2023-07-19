@@ -50,7 +50,9 @@ const DisplayMedia = ({ post, disableZoom }: PostProps) => {
           {post.mediaType === "IMAGE" ? (
             displayImage()
           ) : (
-            <VideoPlayer url={post.media} />
+            <div className="max-h-[560px]">
+              <VideoPlayer url={post.media} />
+            </div>
           )}
         </motion.div>
       )}

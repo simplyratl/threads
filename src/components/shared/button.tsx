@@ -26,16 +26,16 @@ const Button = ({
     return "";
   };
 
-  const disabledClass = rest.disabled ? "opacity-50" : "";
+  const disabledClass = rest.disabled ? "!opacity-50 !cursor-not-allowed" : "";
 
   return (
     <button
       type="button"
       className={`${
         variant === "minimal" ? "" : "px-4 py-0.5"
-      } ${variantClass()} ${outlineClass} ${disabledClass} rounded border font-semibold transition-all ${
+      } ${variantClass()} ${outlineClass} rounded border font-semibold transition-all ${
         className ?? ""
-      }`}
+      } ${disabledClass}`}
       {...rest}
     >
       {children}

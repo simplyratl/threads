@@ -155,6 +155,7 @@ const CreateThreadInput = ({
           variant="minimal"
           className="!p-0 text-black dark:text-white"
           onClick={() => fileInputRef.current?.click()}
+          disabled={isSubmitting}
         >
           <HiPaperClip size={24} />
         </Button>

@@ -1,6 +1,6 @@
 import { useSession } from "next-auth/react";
 import Head from "next/head";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { api } from "~/utils/api";
 import toast from "react-hot-toast";
 import Button from "~/components/shared/button";
@@ -11,6 +11,7 @@ import SmallPostUser from "~/components/shared/post/small-post-user";
 import CreateThreadInput from "~/pages/threads/new/components/create-thread-input";
 import { User } from "@prisma/client";
 import post from "~/components/shared/post/post";
+import LoadingWithOverlay from "~/components/shared/loading-with-overlay";
 
 const CDNURL =
   "https://wxhaoxtosehvuuitysfj.supabase.co/storage/v1/object/public/multimedia/";
@@ -52,6 +53,26 @@ export default function ThreadsNew() {
     },
   });
 
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isSubmitting) {
+        // The confirmation message will be shown to the user
+        // if the state is true and they try to leave the page.
+        const confirmationMessage = "Are you sure you want to leave the page?";
+        e.returnValue = confirmationMessage; // Some browsers require this
+        alert(confirmationMessage);
+        return confirmationMessage;
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      // Remember to remove the event listener to avoid memory leaks.
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [isSubmitting]);
+
   const sendNotification = api.notifications.addMentionNotification.useMutation(
     {
       onSuccess: () => {
@@ -90,8 +111,9 @@ export default function ThreadsNew() {
         id: "post-empty",
       });
 
+    setIsSubmitting(true);
+
     if (!file) {
-      setIsSubmitting(true);
       createPost.mutate({
         content,
       });
@@ -105,7 +127,6 @@ export default function ThreadsNew() {
 
         const multimediaType = isImage(file) ? "IMAGE" : "VIDEO";
 
-        setIsSubmitting(true);
         createPost.mutate({
           content,
           multimediaURL: url,
@@ -179,7 +200,10 @@ export default function ThreadsNew() {
             />
 
             <div className="mt-4 flex justify-end">
-              <Button disabled={isSubmitting} type="submit">
+              <Button
+                disabled={isSubmitting || createPost.isLoading}
+                type="submit"
+              >
                 Post
               </Button>
             </div>
@@ -205,6 +229,7 @@ export default function ThreadsNew() {
             className="hidden"
             ref={fileInputRef}
             accept="image/*,video/mp4"
+            disabled={isSubmitting}
             onChange={(event) => {
               const file = event.target.files?.[0];
 
@@ -223,6 +248,8 @@ export default function ThreadsNew() {
           />
         </form>
       </main>
+
+      {isSubmitting && <LoadingWithOverlay />}
     </>
   );
 }
