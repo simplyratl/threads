@@ -27,7 +27,7 @@ interface PostUserProps {
 function PostUser({ post, className, disableControlBar }: PostUserProps) {
   const { data: session } = useSession();
   const router = useRouter();
-  const { id: profileId } = router.query;
+  const { username: profileUsername } = router.query;
 
   const currentURL =
     typeof window !== "undefined" ? window.location.origin : "";
@@ -50,9 +50,9 @@ function PostUser({ post, className, disableControlBar }: PostUserProps) {
 
   const singlePageReposted =
     router.pathname.includes("/profile/") &&
-    profileId &&
+    profileUsername &&
     session?.user &&
-    session.user.id === (profileId as string) && // if on profile page and viewing own profile;
+    session.user.username === (profileUsername as string) && // if on profile page and viewing own profile;
     post.repostedByCurrentUser;
 
   return (

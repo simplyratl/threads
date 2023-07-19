@@ -74,7 +74,7 @@ export default function NotificationsPage({ id }: { id: string }) {
     const { type } = notification;
 
     if (type === "follow") {
-      return `/profile/${notification.sender.id}`;
+      return `/profile/${notification.sender.username}`;
     } else if (
       (type === "like" ||
         type === "reply" ||
